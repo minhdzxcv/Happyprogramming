@@ -16,7 +16,7 @@ public class DatabaseUtil {
 
     static String dtbName = "SWP391";
     static String username = "sa";
-    static String password = "sa";
+    static String password = "123";
 
     public static Connection getConn() {
         Connection conn = null;
