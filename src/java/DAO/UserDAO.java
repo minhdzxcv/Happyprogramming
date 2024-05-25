@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -135,7 +127,6 @@ public class UserDAO {
     }
 
     public static boolean isMentor(User u) {
-        
         if (u.getRole().equalsIgnoreCase("Mentor")) {
             return true;
         }
@@ -211,14 +202,16 @@ public class UserDAO {
         }
     }
 
+  
+
     public static void updateDob(int id, String Dob) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
             PreparedStatement ps = dbo.prepareStatement("UPDATE [User] SET [dob] = ? WHERE [UserID] = ?");
-            ps.setString(1, Dob);
+             ps.setDate(1, Date.valueOf(Dob));
             ps.setInt(2, id);
             ps.executeUpdate();
-           
+             dbo.commit();
             ps.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,6 +219,7 @@ public class UserDAO {
             dbo.close();
         }
     }
+
 
     public static void updatePhone(int id, String phone) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
@@ -247,6 +241,29 @@ public class UserDAO {
         Connection dbo = DatabaseUtil.getConn();
         try {
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [email] = ? AND [username] = ?");
+            ps.setString(1, email);
+            ps.setString(2, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                rs.close();
+                ps.close();
+                dbo.close();
+                return true;
+            }
+            rs.close();
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbo.close();
+        }
+        return false;
+    }
+    
+    public static boolean isSignInAdmin(String email, String username) throws Exception {
+        Connection dbo = DatabaseUtil.getConn();
+        try {
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [email] = ? AND [username] = ? AND [roleID] IN (1,2); ");
             ps.setString(1, email);
             ps.setString(2, username);
             ResultSet rs = ps.executeQuery();
@@ -305,7 +322,7 @@ public class UserDAO {
                 ps.setInt(1, id);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    return new Mentee(rs.getString("MenteeStatus"), id);
+                    return new Mentee(rs.getString("status"), id);
                 }
             } else if (role.equalsIgnoreCase("mentor")) {
                 PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Mentor] WHERE [UserID] = ?");
@@ -358,7 +375,7 @@ public class UserDAO {
                 ps.setString(9, fullname);
                 int k = ps.executeUpdate();
                 dbo.commit();
-                User u = UserDAO.getUser(username, password);
+                User u = UserDAO.getUser(email, password);
                 if (role.equalsIgnoreCase("mentor")) {
                     ps = dbo.prepareStatement("INSERT INTO [Mentor] ([UserID]) VALUES (?)");
                     ps.setInt(1, u.getId());
@@ -403,7 +420,19 @@ public class UserDAO {
         }
         return users;
     }
-    
+
+    public static void main(String[] args) {
+        int userId = 10;
+        String newDob = "2003-01-02"; // Use double quotes for the date string
+
+        try {
+            updateDob(userId, newDob);
+            System.out.println("Date of birth updated successfully for user ID: " + userId);
+        } catch (Exception e) {
+            System.err.println("Error updating date of birth: " + e.getMessage());
+        }
+    }
+
 
 
 
@@ -418,4 +447,7 @@ public class UserDAO {
 //        }
 //    }
 
-}
+   
+    }
+
+

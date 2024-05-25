@@ -76,7 +76,7 @@ public class RecoveryCodeController extends HttpServlet {
                 String email = request.getParameter("email");
                 String username = request.getParameter("name");
                 try {
-                    if (UserDAO.isRegistered(email, username)) {
+                    if (UserDAO.isSignInAdmin(email, username)) {
                         Random ran = new Random();
                         int num = ran.nextInt(999999);
                         String otp = String.format("%06d", num);
@@ -99,7 +99,7 @@ public class RecoveryCodeController extends HttpServlet {
                         request.getRequestDispatcher("recoveryCode.jsp").forward(request, response);
                         return;
                     } else {
-                        request.setAttribute("message", "Email or username has not been registed!");
+                        request.setAttribute("message", "Email or username is not admin . Please enter the correct admin name and email admin");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
