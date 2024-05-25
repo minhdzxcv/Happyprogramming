@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="my-4">
-                    <a href="#" class="btn btn-primary">View statistic request</a>
+                    <a href="statistic" class="btn btn-primary">View statistic request</a>
                     <a href="CreateRequest" class="btn btn-primary">Create request</a>
                 </div>
             </c:if>
