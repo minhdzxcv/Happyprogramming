@@ -14,7 +14,7 @@ import model.Skill;
 
 /**
  *
- * @author ADMIN
+ * @author TGDD
  */
 public class CvDAO {
     
@@ -36,7 +36,7 @@ public class CvDAO {
     public static void confirmCv(int id) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("UPDATE [Mentor] SET [status] = N'Accepted' WHERE CvID = ?");
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [Mentor] SET [MentorStatus] = N'Accepted' WHERE CvID = ?");
             ps.setInt(1, id);
             ps.executeUpdate();
             dbo.commit();
@@ -66,18 +66,18 @@ public class CvDAO {
         ArrayList<CV> arr = new ArrayList();
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [CV] WHERE (SELECT [status] FROM [Mentor] WHERE CvID = [CV].CvID) = N'Active'");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [CV] WHERE (SELECT [MentorStatus] FROM [Mentor] WHERE CvID = [CV].CvID) = N'Active'");
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
                 ps = dbo.prepareStatement("SELECT [UserID] FROM [Mentor] WHERE [CvID] = ?");
                 ps.setInt(1, rs.getInt("CvID"));
                 ResultSet rs2 = ps.executeQuery();
                 rs2.next();
-                ps = dbo.prepareStatement("SELECT * FROM [MentorOfSkills] WHERE [MentorID] = ?");
+                ps = dbo.prepareStatement("SELECT * FROM [MentorSkills] WHERE [MentorID] = ?");
                 ps.setInt(1, rs2.getInt("UserID"));
                 rs2 = ps.executeQuery();
-                CV cv = new CV(rs.getInt("CvID"), rs.getString("ProfessionIntro"), rs.getString("Description"));
-                cv.setMoneyofslot(rs.getInt("MoneyOfSlot"));
+                CV cv = new CV(rs.getInt("id"), rs.getString("ProfessionIntro"), rs.getString("Description"));
+                cv.setMoneyofslot(rs.getInt("Moneyofslot"));
                 while(rs2.next()) {
                     ps = dbo.prepareStatement("SELECT * FROM [Skills] WHERE [SkillID] = ?");
                     ps.setInt(1, rs2.getInt("SkillID"));
@@ -95,13 +95,13 @@ public class CvDAO {
         return arr;
     }
     
-    public static boolean createCV(int userID, String ProfessionIntro, String Description, String[] skills, int money) throws Exception {
+    public static boolean createCV(int userID, String ProfessionIntroduction, String ServiceDescription, String[] skills, int cash) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [CV] ([ProfessionIntro], [Description], [MoneyOfSlot]) VALUES (?, ?, ?)");
-            ps.setString(1, ProfessionIntro);
-            ps.setString(2, ProfessionIntro);
-            ps.setInt(3, money);
+            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [CV] ([ProfessionIntroduction], [ServiceDescription], [CashPerSlot]) VALUES (?, ?, ?)");
+            ps.setString(1, ProfessionIntroduction);
+            ps.setString(2, ServiceDescription);
+            ps.setInt(3, cash);
             ps.executeUpdate();
             dbo.commit();
             ps = dbo.prepareStatement("SELECT TOP (1) [CvID] FROM [CV] ORDER BY [CvID] DESC");
@@ -114,7 +114,7 @@ public class CvDAO {
             dbo.commit();
             for (int i = 0; i < skills.length; i++) {
                 int id = Integer.parseInt(skills[i]);
-                ps = dbo.prepareStatement("INSERT INTO [MentorOfSkills] ([SkillID], [MentorID]) VALUES (?, ?)");
+                ps = dbo.prepareStatement("INSERT INTO [MentorSkills] ([SkillID], [MentorID]) VALUES (?, ?)");
                 ps.setInt(1, id);
                 ps.setInt(2, userID);
                 ps.executeUpdate();
@@ -141,17 +141,17 @@ public class CvDAO {
                 ps.setInt(1, id);
                 ResultSet rs2 = ps.executeQuery();
                 rs2.next();
-                ps = dbo.prepareStatement("SELECT * FROM [MentorOfSkills] WHERE [MentorID] = ?");
+                ps = dbo.prepareStatement("SELECT * FROM [MentorSkills] WHERE [MentorID] = ?");
                 ps.setInt(1, rs2.getInt("UserID"));
                 rs2 = ps.executeQuery();
-                CV cv = new CV(rs.getInt("CvID"), rs.getString("ProfessionIntro"), rs.getString("Description"));
-                cv.setMoneyofslot(rs.getInt("MoneyOfSlot"));
+                CV cv = new CV(rs.getInt("id"), rs.getString("ProfessionIntro"), rs.getString("Description"));
+                cv.setMoneyofslot(rs.getInt("Moneyofslot"));
                 while(rs2.next()) {
                     ps = dbo.prepareStatement("SELECT * FROM [Skills] WHERE [SkillID] = ?");
                     ps.setInt(1, rs2.getInt("SkillID"));
                     rs = ps.executeQuery();
                     rs.next();
-                    cv.getSkills().add(new Skill(rs2.getInt("SkillID"), rs.getString("SkillName"), rs.getInt("enable") == 1, rs.getString("image"), rs.getString("Description")));
+                    cv.getSkills().add(new Skill(rs2.getInt("SkillID"), rs.getString("SkillName"), rs.getInt("enable") == 1, rs.getString("Imageskill"), rs.getString("Skilldescription")));
                 }
                 dbo.close();
                 return cv;
@@ -164,13 +164,13 @@ public class CvDAO {
         return null;
     }
     
-    public static boolean updateCV(int CvID, String ProfessionIntro, String Description, int MoneyOfSlot) throws Exception {
+    public static boolean updateCV(int CvID, String ProfessionIntroduction, String ServiceDescription, int CashPerSlot) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("UPDATE [CV] SET [ProfessionIntro] = ?, [Description] = ?, [MoneyOfSlot] = ? WHERE [CvID] = ?");
-            ps.setString(1, ProfessionIntro);
-            ps.setString(2, Description);
-            ps.setInt(3, MoneyOfSlot);
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [CV] SET [ProfessionIntroduction] = ?, [ServiceDescription] = ?, [CashPerSlot] = ? WHERE [CvID] = ?");
+            ps.setString(1, ProfessionIntroduction);
+            ps.setString(2, ServiceDescription);
+            ps.setInt(3, CashPerSlot);
             ps.setInt(4, CvID);
             ps.executeUpdate();
             dbo.commit();
@@ -187,7 +187,7 @@ public class CvDAO {
     public static boolean removeSkill(int userID, int skillID) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("DELETE FROM [MentorOfSkills] WHERE [MentorID] = ? AND SkillID = ?");
+            PreparedStatement ps = dbo.prepareStatement("DELETE FROM [MentorSkills] WHERE [MentorID] = ? AND SkillID = ?");
             ps.setInt(1, userID);
             ps.setInt(2, skillID);
             int k = ps.executeUpdate();
@@ -207,12 +207,12 @@ public class CvDAO {
     public static boolean addSkill(int userID, int skillID) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [MentorOfSkills] WHERE [MentorID] = ? AND [SkillID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [MentorSkills] WHERE [MentorID] = ? AND [SkillID] = ?");
             ps.setInt(1, userID);
             ps.setInt(2, skillID);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) return false;
-            ps = dbo.prepareStatement("INSERT INTO [MentorOfSkills] ([MentorID], [SkillID]) VALUES (?, ?)");
+            ps = dbo.prepareStatement("INSERT INTO [MentorSkills] ([MentorID], [SkillID]) VALUES (?, ?)");
             ps.setInt(1, userID);
             ps.setInt(2, skillID);
             int k = ps.executeUpdate();
