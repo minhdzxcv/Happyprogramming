@@ -5,20 +5,23 @@
 
 package Controller;
 
+import DAO.MentorDAO;
+import DAO.SkillDAO;
+import Service.AuthorizationService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import model.Skill;
 
 /**
  *
- * @author MINH
+ * @author ADMIN
  */
-@WebServlet(name="test", urlPatterns={"/test"})
-public class test extends HttpServlet {
+public class SkillServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -28,25 +31,47 @@ public class test extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet test</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet test at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            throws ServletException, IOException {
+        try {
+            if (!AuthorizationService.gI().Authorization(request, response)) {
+                return;
+            }
+        } catch(Exception e) {}
+        try {
+            ArrayList<Skill> arr = SkillDAO.getAll(true);
+            request.setAttribute("skills", arr);
+            ArrayList<Skill> az = (ArrayList)arr.clone();
+            for (int i = 0; i < az.size(); i++) {
+                for (int j = i; j < az.size(); j++) {
+                    if (az.get(i).getName().compareTo(az.get(j).getName()) > 0) {
+                        Skill temp = az.get(i);
+                        az.set(i, az.get(j));
+                        az.set(j, temp);
+                    }
+                }
+            }
+            request.setAttribute("a-z", az);
+            ArrayList<Skill> za = (ArrayList)arr.clone();
+            for (int i = 0; i < za.size(); i++) {
+                for (int j = i; j < za.size(); j++) {
+                    if (za.get(i).getName().compareTo(za.get(j).getName()) < 0) {
+                        Skill temp = za.get(i);
+                        za.set(i, za.get(j));
+                        za.set(j, temp);
+                    }
+                }
+            }
+            request.setAttribute("z-a", za);
+        } catch (Exception e) {
         }
-    } 
+        
+        request.getRequestDispatcher("skill.jsp").forward(request, response);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -54,12 +79,13 @@ public class test extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
-    } 
+    }
 
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -67,12 +93,13 @@ public class test extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override
