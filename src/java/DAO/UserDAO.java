@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Mentee;
 import model.Mentor;
-
+import model.RequestDTO;
 import model.User;
 
 /**
@@ -443,20 +443,69 @@ public class UserDAO {
     }
 
 
+public int getUserID(String email) {
+        int id = 0;
+        Connection dbo = DatabaseUtil.getConn();
 
+        try {
+            String sql = "select UserID from [User] where email like ?";
+            PreparedStatement ps = dbo.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
 
-//     public static void main(String[] args) {
-//        try {
-//            List<User> users = getTopUsersWithRoleID3();
-//            for (User user : users) {
-//                System.out.println(user);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return 0;
+    }
+
+public List<RequestDTO> getRequestOfMentee(int id) {
+        List<RequestDTO> requests = new ArrayList<>();
+        Connection dbo = DatabaseUtil.getConn();
+
+        try {
+            String sql = "  select r.RequestReason,r.RequestTime,r.RequestSubject,s.SkillName,r.RequestStatus from Request r,Skills s where UserID = ? and s.SkillID = r.SkillID;";
+            PreparedStatement ps = dbo.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                RequestDTO request = new RequestDTO(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
+                requests.add(request);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return requests;
+    }
 
    
+public int getRequestMentor(int id) {
+        Connection dbo = DatabaseUtil.getConn();
+
+        try {
+            String sql = "SELECT COUNT(DISTINCT SendID)\n"
+                    + "FROM Request\n"
+                    + "WHERE UserID = ?;";
+            PreparedStatement ps = dbo.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return 0;
+    }
     }
 
 

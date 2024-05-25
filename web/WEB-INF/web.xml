@@ -80,4 +80,12 @@
         <servlet-name>SkillServlet</servlet-name>
         <url-pattern>/skill</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>MenteeRequest</servlet-name>
+        <servlet-class>Controller.MenteeRequest</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MenteeRequest</servlet-name>
+        <url-pattern>/statistic</url-pattern>
+    </servlet-mapping>
 </web-app>
