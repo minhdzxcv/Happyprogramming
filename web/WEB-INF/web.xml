@@ -33,10 +33,6 @@
         <servlet-class>Controller.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ForgotServlet</servlet-name>
-        <servlet-class>Controller.ForgotServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ViewMentorServlet</servlet-name>
         <servlet-class>Controller.ViewMentorServlet</servlet-class>
     </servlet>
@@ -75,10 +71,6 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ForgotServlet</servlet-name>
-        <url-pattern>/forgot</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ViewMentorServlet</servlet-name>
