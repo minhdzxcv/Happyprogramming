@@ -155,6 +155,7 @@
     </head>
 
     <body>
+        <div class="container">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -164,96 +165,53 @@
         <!-- Spinner End -->
 
         <%@include file="header.jsp" %>
+        <div class="container mt-4">
+        <div class="row">
+            <!-- Cột trái -->
+            <div class="col-sm-4">
+                <div class="container light-style flex-grow-1 container-p-y">
+                    <h4 class="font-weight-bold py-3 mb-4">TÀI KHOẢN</h4>
 
-        <div class="container light-style flex-grow-1 container-p-y">
-            <h4 class="font-weight-bold py-3 mb-4">TÀI KHOẢN</h4>
-
-            <div class="card overflow-hidden">
-                <div class="row no-gutters row-bordered row-border-light">
-                    <div class="col-md-3 pt-0">
-                        <div class="list-group list-group-flush account-settings-links">                  
-                            <a id="general" class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">General</a>
-                            <%if(u.getRole().equalsIgnoreCase("mentor")) {%>
-                            <a id="cv" class="list-group-item list-group-item-action" data-toggle="list" href="#">CV</a>    
-                            <a id="statistics" class="list-group-item list-group-item-action " data-toggle="list" href="#">Request statistics</a>
-                            <%}else {%>
-                            <a id="statistics" class="list-group-item list-group-item-action " data-toggle="list" href="#">Request statistics</a>
-                            <%}%>
-                            <a id="password" class="list-group-item list-group-item-action " data-toggle="list" href="#">Change password</a>  
-
-                            <a id="history" class="list-group-item list-group-item-action " data-toggle="list" href="#">Transaction history</a>                      
-                            <a id="pay" class="list-group-item list-group-item-action " data-toggle="list" href="#">Pay</a>
-                            <a id="wallet" class="list-group-item list-group-item-action " data-toggle="list" href="#">Wallet</a>           
-
-                        </div>
-                    </div>
-
-                    <div class="col-md-9">
-                        <div class="tab-content">
-                            <!-- General -->
-                            <div class="tab-pane fade active show" id="account-general">
-                                <div class="card-body media align-items-center">
-                                    <img id="avatarPreview" src="<%=u.getAvatar() == null ? "https://files.playerduo.net/production/images/avatar31.png" : u.getAvatar() %>" alt="avatar" class="d-block ui-w-80">
-                                    <div class="media-body ml-4">
-                                        <form action="profile" method="post" enctype="multipart/form-data">
-                                            <label class="btn btn-outline-primary">
-                                                Upload new photo
-                                                <input type="file" class="account-settings-fileinput" name="avatar" id="avatarInput">
-                                            </label> &nbsp;
-                                            <button type="submit" class="btn btn-default md-btn-flat">Save Change</button>
-                                            <div style="color: red" class="text-light small mt-1">Allowed JPG, GIF or PNG. Max size of 800K</div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <hr class="border-light m-0">
-                                <div class="card-body">
-                                    <form action="profile" method="post" enctype="multipart/form-data">
-                                        <div class="form-group">
-                                            <label class="form-label">Name</label>
-                                            <input type="text" name="fullname" class="form-control mb-1" value="<%=u.getFullname()%>">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Birthday</label>
-                                            <input type="date" name="dob" class="form-control" value="<%=u.getDob()%>">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Address</label>
-                                            <input type="text" name="address" class="form-control" value="<%=u.getAddress()%>">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">Gender</label>
-                                            <div class="form-label">
-                                                <label class="form-label">
-                                                    <input name="gender" type="radio" value="male" <%=!u.isGender() ? "checked" : ""%>>Nam <span></span>
-                                                </label>
-                                                <label class="form-label">
-                                                    <input name="gender" type="radio" value="female" <%=u.isGender() ? "checked" : ""%>>Nữ <span></span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">E-mail</label>
-                                            <input type="text" name="email" class="form-control mb-1" value="<%=u.getEmail()%>" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">Phone</label>
-                                            <input type="text" name="phone" class="form-control" value="<%=u.getPhone()%>">
-                                        </div>
-                                        <div class="text-right mt-3">
-                                            <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
-                                            <button type="reset" class="btn btn-default">Cancel</button>
-                                        </div>
-                                    </form>
+                    <div class="card overflow-hidden">
+                        <div class="row no-gutters row-bordered row-border-light">
+                            <div class="col-md-12 pt-0">
+                                <div class="list-group list-group-flush account-settings-links">
+                                    <a id="general" class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">General</a>
+                                    <% if (u.getRole().equalsIgnoreCase("mentor")) { %>
+                                        <a id="cv" class="list-group-item list-group-item-action" data-toggle="list" href="#">CV</a>
+                                        <a id="statistics" class="list-group-item list-group-item-action" data-toggle="list" href="#">Request statistics</a>
+                                    <% } else { %>
+                                        <a id="statistics" class="list-group-item list-group-item-action" data-toggle="list" href="#">Request statistics</a>
+                                    <% } %>
+                                    <a id="password" class="list-group-item list-group-item-action" data-toggle="list" href="#">Change password</a>
+                                    <a id="history" class="list-group-item list-group-item-action" data-toggle="list" href="#">Transaction history</a>
+                                    <a id="pay" class="list-group-item list-group-item-action" data-toggle="list" href="#">Pay</a>
+                                    <a id="wallet" class="list-group-item list-group-item-action" data-toggle="list" href="#">Wallet</a>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <!-- Cột phải -->
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h3>Thống Kê Request</h3>
+                    <hr>
+                    <p>TỔNG SỐ REQUEST NHẬN ĐƯỢC:</p>
+                    <hr>
+                    <p>TỔNG SỐ REQUEST ĐÃ TỪ CHỐI:</p>
+                    <hr>
+                    <p>TỈ LỆ TỪ CHỐI REQUEST:</p>
+                    <hr>
+                    <p>TỔNG SỐ REQUEST ĐÃ CHẤP THUẬN:</p>
+                    <hr>
+                    <p>ĐÁNH GIÁ TỪ HỌC VIÊN:</p>
+                    <hr>
+                    <p>TỈ LỆ HOÀN THÀNH REQUEST:</p>
+                </div>
+            </div>
+        
         <%@include file="footer.jsp" %>
         <!-- Footer End -->
 
@@ -286,7 +244,7 @@
                 window.location.href = 'setting';
             });
             statisticsLink.addEventListener('click', function () {
-                window.location.href = 'statistics.jsp';
+                window.location.href = 'statistics';
             });
             historyLink.addEventListener('click', function () {
                 window.location.href = 'transaction';
