@@ -102,10 +102,10 @@ public class CvServlet extends HttpServlet {
             }
         } else {
             if(type.equalsIgnoreCase("create")) {
-                String ProfessionIntro = request.getParameter("ProfessionIntro");
-                String Description = request.getParameter("Description");
+                String ProfessionIntro = request.getParameter("profession");
+                String Description = request.getParameter("service");
                 String[] skills = request.getParameterValues("skills");
-                String sMoney = request.getParameter("money");
+                String sMoney = request.getParameter("cash");
                 int money = Integer.parseInt(sMoney);
                 try {
                     CvDAO.createCV(u.getId(), ProfessionIntro, Description, skills, money);

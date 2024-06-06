@@ -24,8 +24,7 @@
             </style>
 
 
-        </style>
-
+        
         <meta charset="utf-8">
         <title>Happy Programming</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -190,74 +189,92 @@
                 <div class="container">
 
                     <div class="list-player">
-                        <div class="box vip-player">
-                            <header class="title-header vip">
-                                <h5  class="title-header-left"><%=Marr == null ? "Skills" : "Mentors"%></h5>
-                            </header>
-                            <div class="card-player row">
-                                <%  if(Marr == null) {
-                                    for(int i = 0; i < (arr.size() > 14 ? 14 : arr.size()); i++) {%>
-                                <div class="col-md-3">
-                                    <div class="player-information-card-wrap">
-                                        <div  class="player-avatar">
-                                            <a target="_blank" href="skill?id=<%=arr.get(i).getId()%>">
-                                                <img  style="height: 280px;
-                                                width: 300px  " src="<%=arr.get(i).getAvatar() != null ? arr.get(i).getAvatar() : "images/no-image.jpg"%>" class="" alt="PD" id="avt-img-reponsiver">
-                                                </a>
-                                            </div>
-                                            <a target="_blank" class="player-information" href="skill?id=<%=arr.get(i).getId()%>">
-                                                <h3 class="player-name">
-                                                    <span style="font-weight: 700;
-                                                color: #000;" target="_blank" href="skill?id=<%=arr.get(i).getId()%>"><%=arr.get(i).getName() != null ? arr.get(i).getName() : ""%> </span>
-                                                <i class="fas fa-check-circle kyc" aria-hidden="true"></i>
-                                                <div class="player-status ready"></div>
-                                            </h3>
-                                            <p class="player-title"><%=arr.get(i).getDescription() != null ? arr.get(i).getDescription() : ""%> </p>
-                                        </a>
-                                    </div>
-                                </div>
-                                <%}%>
-                                <div class="col-md-3">
-                                    <div class="player-information-card-wrap">
-                                        <div class="player-avatar">
-                                            <a target="_blank" href="skill">
-                                                <img src="https://playerduo.net/api/upload-service/game_avatars/715867c6-698f-411a-b4f9-1e9093130b60__d8d57300-37bc-11ed-838c-b120e70abb59__game_avatars.jpg" class="" alt="PD" id="avt-img-reponsiver">
-                                            </a>
-                                        </div>
-                                        <a target="_blank" class="player-information" href="skill">
-                                            <h3 class="player-name">
-                                                <span style="font-weight: 700;
-                                                color: #000;" target="_blank" href="skill">Khác</span>
-                                            </h3>
-                                            <p class="player-title"></p>
-                                        </a>
-                                    </div>
-                                </div>
-                                <% } else {
-                                    for(int i = 0; i < Marr.size(); i++) {%>
-                                <div class="col-md-3">
-                                    <div class="player-information-card-wrap">
-                                        <div class="player-avatar">
-                                            <a target="_blank" href="mentor?id=<%=Marr.get(i).getId()%>">
-                                                <img style="height: 300px;width: 300px" src="<%=Marr.get(i).getAvatar() != null ? Marr.get(i).getAvatar() : "img/about.jpg"%>" class="" alt="PD" id="avt-img-reponsiver">
-                                            </a>
-                                        </div>
-                                        <a target="_blank" class="player-information" href="mentor?id=<%=Marr.get(i).getId()%>">
-                                            <h3 class="player-name">
-                                                <span style="font-weight: 700;
-                                                color: #000;" target="_blank" href="mentor?id=<%=Marr.get(i).getId()%>"><%=Marr.get(i).getFullname() != null ? Marr.get(i).getFullname() : ""%> </span>
-                                                <i class="fas fa-check-circle kyc" aria-hidden="true"></i>
-                                                <div class="player-status ready"></div>
-                                            </h3>
-                                            <p class="player-title"><%=Marr.get(i).getDescription() != null ? Marr.get(i).getDescription() : ""%> </p>
-                                        </a>
-                                    </div>
-                                </div>
-                                <%}}
-                                %>
-                            </div>
+    <div class="box vip-player">
+        <header class="title-header vip">
+            <h5 class="title-header-left"><%=Marr == null ? "Skills" : "Mentors"%></h5>
+        </header>
+        <div class="card-player row">
+            <% if (Marr == null) {
+                for (int i = 0; i < (arr.size() > 14 ? 14 : arr.size()); i++) { %>
+                <div class="col-md-3">
+                    <div class="player-information-card-wrap">
+                        <div class="player-avatar">
+                            <a target="_blank" href="skill?id=<%=arr.get(i).getId()%>">
+                                <img style="height: 280px; width: 300px" src="<%=arr.get(i).getAvatar() != null ? arr.get(i).getAvatar() : "images/no-image.jpg"%>" class="avatar-click" alt="PD" data-id="<%=arr.get(i).getId()%>">
+                            </a>
                         </div>
+                        <a target="_blank" class="player-information" href="skill?id=<%=arr.get(i).getId()%>">
+                            <h3 class="player-name">
+                                <span style="font-weight: 700; color: #000;" class="name-click" data-id="<%=arr.get(i).getId()%>"><%=arr.get(i).getName() != null ? arr.get(i).getName() : ""%></span>
+                                <i class="fas fa-check-circle kyc" aria-hidden="true"></i>
+                                <div class="player-status ready"></div>
+                            </h3>
+                            <p class="player-title"><%=arr.get(i).getDescription() != null ? arr.get(i).getDescription() : ""%></p>
+                        </a>
                     </div>
+                </div>
+            <% } %>
+                <div class="col-md-3">
+                    <div class="player-information-card-wrap">
+                        <div class="player-avatar">
+                            <a target="_blank" href="skill">
+                                <img src="https://playerduo.net/api/upload-service/game_avatars/715867c6-698f-411a-b4f9-1e9093130b60__d8d57300-37bc-11ed-838c-b120e70abb59__game_avatars.jpg" class="" alt="PD" id="avt-img-reponsiver">
+                            </a>
+                        </div>
+                        <a target="_blank" class="player-information" href="skill">
+                            <h3 class="player-name">
+                                <span style="font-weight: 700; color: #000;" target="_blank" href="skill">Khác</span>
+                            </h3>
+                            <p class="player-title"></p>
+                        </a>
+                    </div>
+                </div>
+            <% } else {
+                for (int i = 0; i < Marr.size(); i++) { %>
+                <div class="col-md-3">
+                    <div class="player-information-card-wrap">
+                        <div class="player-avatar">
+                            <a target="_blank" href="mentor?id=<%=Marr.get(i).getId()%>">
+                                <img style="height: 300px;width: 300px" src="<%=Marr.get(i).getAvatar() != null ? Marr.get(i).getAvatar() : "img/about.jpg"%>" class="avatar-click" alt="PD" data-id="<%=Marr.get(i).getId()%>">
+                            </a>
+                        </div>
+                        <a target="_blank" class="player-information" href="mentor?id=<%=Marr.get(i).getId()%>">
+                            <h3 class="player-name">
+                                <span style="font-weight: 700; color: #000;" class="name-click" data-id="<%=Marr.get(i).getId()%>"><%=Marr.get(i).getFullname() != null ? Marr.get(i).getFullname() : ""%></span>
+                                <i class="fas fa-check-circle kyc" aria-hidden="true"></i>
+                                <div class="player-status ready"></div>
+                            </h3>
+                            <p class="player-title"><%=Marr.get(i).getDescription() != null ? Marr.get(i).getDescription() : ""%></p>
+                        </a>
+                    </div>
+                </div>
+            <% } } %>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add event listener to avatar-click class
+        document.querySelectorAll('.avatar-click').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                var mentorId = this.getAttribute('data-id');
+                window.location.href = 'mentor?id=' + mentorId;
+            });
+        });
+
+        // Add event listener to name-click class
+        document.querySelectorAll('.name-click').forEach(function(element) {
+            element.addEventListener('click', function(event) {
+                event.preventDefault();
+                var mentorId = this.getAttribute('data-id');
+                window.location.href = 'mentor?id=' + mentorId;
+            });
+        });
+    });
+</script>
+
                     </section><!-- End About Section -->
                 </div>
         </main><!-- End #main -->
@@ -340,6 +357,8 @@
 
 
         <script src="js/main.js"></script>
+        
+       
     </body>
 
 </html>

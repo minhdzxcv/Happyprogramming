@@ -89,5 +89,8 @@ public class CV {
         this.Description = Description;
     }
 
-    
+        public String CashFormat() {
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0");
+        return decimalFormat.format(Moneyofslot);
+    }
 }

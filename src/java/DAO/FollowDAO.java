@@ -179,11 +179,11 @@ public class FollowDAO {
         ArrayList<FollowRequest> arr = new ArrayList();
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT [RequestID],[RequestTime],[DeadLineTime],[Subject],[Content],[Status],[MentorID],[SenderID], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[SenderID]) as [Sender], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[MentorID]) as [Mentor] FROM [FollowRequest] WHERE [MentorID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("SELECT [RequestID],[RequestTime],[DeadLineTime],[Subject],[Content],[Status],[MentorID],[SendID], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[SendID]) as [Send], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[MentorID]) as [Mentor] FROM [FollowRequest] WHERE [MentorID] = ?");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
-                arr.add(new FollowRequest(rs.getInt("RequestID"), rs.getString("Subject"), rs.getString("Content"), rs.getInt("SenderID"), rs.getInt("MentorID"), rs.getString("Sender"), rs.getString("Mentor"), rs.getTimestamp("DeadLineTime"), rs.getTimestamp("RequestTime"), rs.getString("Status")));
+                arr.add(new FollowRequest(rs.getInt("RequestID"), rs.getString("Subject"), rs.getString("Content"), rs.getInt("SendID"), rs.getInt("MentorID"), rs.getString("Send"), rs.getString("Mentor"), rs.getTimestamp("DeadLineTime"), rs.getTimestamp("RequestTime"), rs.getString("Status")));
             }
             dbo.close();
         } catch(Exception e) {

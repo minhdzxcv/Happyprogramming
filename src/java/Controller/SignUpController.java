@@ -3,6 +3,7 @@ package Controller;
 import Service.AuthorizationService;
 import DAO.UserDAO;
 import Service.MailService;
+import Service.RandomStringService;
 import model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -15,6 +16,7 @@ import java.sql.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import model.Mentor;
 
 @WebServlet("/SignUpController")
 public class SignUpController extends HttpServlet {
@@ -83,11 +85,12 @@ public class SignUpController extends HttpServlet {
 
             // Register the user
             User user = UserDAO.register(username, password, email, phone, address, role, gender, fullname, dob);
-            if (user != null) {
+            if (user == null) {
                 request.getSession().setAttribute("alert", "Email or username has already been registered");
                 request.getRequestDispatcher("SignUp.jsp").forward(request, response);
                 return;
             }
+            
 
             // Send recovery email
             UserDAO.isRegistered(email, username);

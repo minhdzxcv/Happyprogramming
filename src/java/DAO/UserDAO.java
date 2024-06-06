@@ -30,7 +30,12 @@ import model.User;
  * @author TGDD
  */
 public class UserDAO {
+    
 
+    
+    
+    
+    
     public static int getWallet(int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         int wallet = 0;
@@ -269,7 +274,51 @@ public class UserDAO {
         return false;
     }
     
-    public static boolean isSignInAdmin(String email, String username) throws Exception {
+    public User getUserById(int id) {
+        User user = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DatabaseUtil.getConn();
+            preparedStatement = connection.prepareStatement("SELECT * FROM [User] WHERE UserID = ?");
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                user = new User();
+                user.id = resultSet.getInt("UserID");
+                user.username = resultSet.getString("username");
+                user.password = resultSet.getString("password");
+                user.email = resultSet.getString("email");
+                user.phone = resultSet.getString("phoneNumber");
+                user.address = resultSet.getString("address");
+                user.role = resultSet.getString("roleID");
+                user.avatar = resultSet.getString("Avatar");
+                user.fullname = resultSet.getString("fullname");
+                user.Dob = resultSet.getDate("dob");
+                user.wallet = resultSet.getInt("wallet");
+                user.status = resultSet.getBoolean("status");
+                user.gender = resultSet.getBoolean("gender");
+                user.isValidate = resultSet.getBoolean("isValidate");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return user;
+    }
+    
+      public static boolean isSignInAdmin(String email, String username) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [email] = ? AND [username] = ? AND [roleID] IN (1,2); ");
@@ -323,6 +372,7 @@ public class UserDAO {
         return null;
     }
 
+     
     public static Object getRole(int id, String role) {
         Connection dbo = DatabaseUtil.getConn();
         try {

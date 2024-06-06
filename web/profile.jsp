@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@page import="java.util.ArrayList, model.User, model.Mentor, model.Mentee , DAO.UserDAO" %>
+<%@page import="model.Skill, java.util.ArrayList, model.User, java.text.SimpleDateFormat, model.Mentor, model.Mentee, DAO.FollowDAO" %>
 <%@page import="java.util.List" %>
 
 <!DOCTYPE html>
@@ -132,6 +133,76 @@
             }
 
         </style>
+         <style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+</style>
+<style>
+    .centered-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.input-field {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.input-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.centered-text {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.margin-div {
+    margin: 10px 0;
+}
+
+.submit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+</style>
         <meta charset="utf-8">
         <title>User Profile</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -205,6 +276,20 @@
                                         </form>
                                     </div>
                                 </div>
+                                    
+                                    
+                                    <%if(u.getRole().equalsIgnoreCase("mentee")) {%>
+                                    <p class="control-label">Following: <a href="listfollow"><span style="color: black;font-weight: bold;text-transform: none;" onclick="following(event)"><%=FollowDAO.following(u.getId())%> Mentors</span></a></p>
+                                    <hr>
+                                    
+                                    
+                                    <% } else if(u.getRole().equalsIgnoreCase("mentor")) {%>
+                                    <p class="control-label">Follower: <a href="listfollow"><span style="color: black;font-weight: bold;text-transform: none;" onclick="follower(event)"><%=FollowDAO.follower(u.getId())%> Mentees</span></a></p>
+                                    <p class="control-label">Follow Request: <a href="followrequest" title="View details"><span style="color: black;font-weight: bold;text-transform: none;"><%=FollowDAO.followRequest(u.getId())%> Requests</span></a></p>
+                                    <hr>
+                                    
+                                    <% } %>
+                                    
                                 <hr class="border-light m-0">
                                 <div class="card-body">
                                     <form action="profile" method="post" enctype="multipart/form-data">

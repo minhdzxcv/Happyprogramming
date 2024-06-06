@@ -1,185 +1,255 @@
 <%-- 
-    Document   : cv
-    Created on : May 21, 2024, 12:55:20 PM
+    Document   : home
+    Created on : May 13, 2024, 9:04:58 PM
     Author     : ADMIN
 --%>
+
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="model.Skill, java.util.ArrayList, model.User, java.text.SimpleDateFormat, model.Mentor, model.Mentee, model.CV, DAO.CvDAO" %>
-
+<%@ page import="java.util.List" %>
 
 <!DOCTYPE html>
 
 <html lang="en">
 
-    <head>
-        <style>
-            body{
-                background: #f5f5f5;
-                margin-top:20px;
-            }
+<head>
+    <style>
+        .img-fixed-size {
+    width: 100%; /* Thiết lập kích thước chiều rộng của ảnh */
+    height: auto; /* Đảm bảo tỷ lệ khung hình được giữ nguyên */
+}
+</style>
 
-            .ui-w-80 {
-                width: 80px !important;
-                height: auto;
-            }
+<style>
+    body {
+    background: #f7f7ff; /* Lấy giá trị mới nhất */
+    margin-top: 20px;
+}
 
-            .btn-default {
-                border-color: rgba(24,28,33,0.1);
-                background: rgba(0,0,0,0);
-                color: #4E5155;
-            }
+.ui-w-80 {
+    width: 80px !important;
+    height: auto;
+}
 
-            label.btn {
-                margin-bottom: 0;
-            }
+.btn-default {
+    border-color: rgba(24,28,33,0.1);
+    background: rgba(0,0,0,0);
+    color: #4E5155;
+}
 
-            .btn-outline-primary {
-                border-color: #26B4FF;
-                background: transparent;
-                color: #26B4FF;
-            }
+label.btn {
+    margin-bottom: 0;
+}
 
-            .btn {
-                cursor: pointer;
-            }
+.btn-outline-primary {
+    border-color: #26B4FF;
+    background: transparent;
+    color: #26B4FF;
+}
 
-            .text-light {
-                color: #babbbc !important;
-            }
+.btn {
+    cursor: pointer;
+}
 
-            .btn-facebook {
-                border-color: rgba(0,0,0,0);
-                background: #3B5998;
-                color: #fff;
-            }
+.text-light {
+    color: #babbbc !important;
+}
 
-            .btn-instagram {
-                border-color: rgba(0,0,0,0);
-                background: #000;
-                color: #fff;
-            }
+.btn-facebook {
+    border-color: rgba(0,0,0,0);
+    background: #3B5998;
+    color: #fff;
+}
 
-            .card {
-                background-clip: padding-box;
-                box-shadow: 0 1px 4px rgba(24,28,33,0.012);
-            }
+.btn-instagram {
+    border-color: rgba(0,0,0,0);
+    background: #000;
+    color: #fff;
+}
 
-            .row-bordered {
-                overflow: hidden;
-            }
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid transparent;
+    border-radius: .25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
+}
 
-            .account-settings-fileinput {
-                position: absolute;
-                visibility: hidden;
-                width: 1px;
-                height: 1px;
-                opacity: 0;
-            }
-            .account-settings-links .list-group-item.active {
-                font-weight: bold !important;
-            }
-            html:not(.dark-style) .account-settings-links .list-group-item.active {
-                background: transparent !important;
-            }
-            .account-settings-multiselect ~ .select2-container {
-                width: 100% !important;
-            }
-            .light-style .account-settings-links .list-group-item {
-                padding: 0.85rem 1.5rem;
-                border-color: rgba(24, 28, 33, 0.03) !important;
-            }
-            .light-style .account-settings-links .list-group-item.active {
-                color: #4e5155 !important;
-            }
-            .material-style .account-settings-links .list-group-item {
-                padding: 0.85rem 1.5rem;
-                border-color: rgba(24, 28, 33, 0.03) !important;
-            }
-            .material-style .account-settings-links .list-group-item.active {
-                color: #4e5155 !important;
-            }
-            .dark-style .account-settings-links .list-group-item {
-                padding: 0.85rem 1.5rem;
-                border-color: rgba(255, 255, 255, 0.03) !important;
-            }
-            .dark-style .account-settings-links .list-group-item.active {
-                color: #fff !important;
-            }
-            .light-style .account-settings-links .list-group-item.active {
-                color: #4E5155 !important;
-            }
-            .light-style .account-settings-links .list-group-item {
-                padding: 0.85rem 1.5rem;
-                border-color: rgba(24,28,33,0.03) !important;
-            }
+.me-2 {
+    margin-right: .5rem!important;
+}
 
-        </style>
-        <style>
-            body{
-                background: #f7f7ff;
-                margin-top:20px;
-            }
-            .card {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                min-width: 0;
-                word-wrap: break-word;
-                background-color: #fff;
-                background-clip: border-box;
-                border: 0 solid transparent;
-                border-radius: .25rem;
-                margin-bottom: 1.5rem;
-                box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%);
-            }
-            .me-2 {
-                margin-right: .5rem!important;
-            }
+.row-bordered {
+    overflow: hidden;
+}
 
-        </style>
-        <meta charset="utf-8">
-        <title>eLEARNING - eLearning HTML Template</title>
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="" name="keywords">
-        <meta content="" name="description">
+.account-settings-fileinput {
+    position: absolute;
+    visibility: hidden;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
 
-        <!-- Favicon -->
-        <link href="img/favicon.ico" rel="icon">
+.account-settings-links .list-group-item.active {
+    font-weight: bold !important;
+}
 
-        <!-- Google Web Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+html:not(.dark-style) .account-settings-links .list-group-item.active {
+    background: transparent !important;
+}
 
-        <!-- Icon Font Stylesheet -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+.account-settings-multiselect ~ .select2-container {
+    width: 100% !important;
+}
 
-        <!-- Libraries Stylesheet -->
-        <link href="lib/animate/animate.min.css" rel="stylesheet">
-        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+.light-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(24, 28, 33, 0.03) !important;
+}
 
-        <!-- Customized Bootstrap Stylesheet -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+.light-style .account-settings-links .list-group-item.active {
+    color: #4e5155 !important;
+}
 
-        <!-- Template Stylesheet -->
-        <link href="css/style.css" rel="stylesheet">
-        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css'>
-    </head>
+.material-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(24, 28, 33, 0.03) !important;
+}
 
-    <body>
-        <!-- Spinner Start -->
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+.material-style .account-settings-links .list-group-item.active {
+    color: #4e5155 !important;
+}
+
+.dark-style .account-settings-links .list-group-item {
+    padding: 0.85rem 1.5rem;
+    border-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.dark-style .account-settings-links .list-group-item.active {
+    color: #fff !important;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.centered-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.input-field {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.input-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.centered-text {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.margin-div {
+    margin: 10px 0;
+}
+
+.submit-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+    
+</style>
+
+    <meta charset="utf-8">
+    <title>Happy Programming</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+        <link href="https://img.lovepik.com/free-png/20210926/lovepik-cartoon-book-png-image_401449837_wh1200.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- // Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-        <!-- Spinner End -->
+    </div>
+    <!-- Spinner End -->
 
 
-        <%@include file="header.jsp" %>
-        <%
+   <%@include file="header.jsp" %>
+
+   
+
+<%
             ArrayList<Skill> skills = (ArrayList<Skill>)request.getAttribute("skills");
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             CV cv = null;   
@@ -211,7 +281,7 @@
                             <a id="history" class="list-group-item list-group-item-action " data-toggle="list" href="#">Transaction history</a>                      
                             <a id="pay" class="list-group-item list-group-item-action " data-toggle="list" href="#">Pay</a>
                             <a id="wallet" class="list-group-item list-group-item-action " data-toggle="list" href="#">Wallet</a>           
-                            <a class="list-group-item list-group-item-action" data-toggle="list" href="#account-notifications">Notifications</a>                  
+                                         
                         </div>
                     </div>
                     <div class="col-md-9">
@@ -333,6 +403,9 @@
                                                                 <div class="row mb-3">
                                                                    <button class="form-control"type="submit" class="btn-update" id="<%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%>"><%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%> </button><%=cv != null ? "</form>" : ""%>
                                                                 </div>
+                                                                
+
+
                                                                 <div class="row mb-3">
                                                                     <button class="form-control"type="reset" class="btn-update">Cancel</button>                                                            
                                                                 </div>
@@ -352,10 +425,15 @@
             </div>
         </div>
     
-<%@include file="footer.jsp" %>
-        <!-- Notifications -->
+   <%@include file="footer.jsp" %>
+    <!-- Footer End -->
 
-        <script>
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+     
+       <script>
             function deleteSkill(id) {
             <%if(cv != null && cv.getSkills().size() > 1) {%>
                 let param = "type=delete&id=" + id;
@@ -389,41 +467,7 @@
                 }, 100);
                 //console.log(select.value);
             }
-            if (document.getElementById('createCV') != null) {
-                document.getElementById('createCV').onclick = function () {
-                    if (!JSON.stringify(document.body.style).includes("overflow: hidden;")) {
-                        document.body.style = 'overflow: hidden; padding-right: 17px; background-color: rgb(233, 235, 238) !important; padding-top: 66px;';
-                        //document.body.style = 'background-color: rgb(233, 235, 238) !important; padding-top: 66px;';
-                        let modal = document.createElement('div');
-                modal.innerHTML = '<div role="dialog"><div class="fade modal-backdrop"></div><div role="dialog" tabindex="-1" class="fade modal" style="display: block;"><div class="auth-modal modal-dialog"><div class="modal-content" role="document"><div class="modal-body"><div class="logo"><img alt="logo playerduo" style="border-radius: 20%;" src="images/logo.png"><h1>Happy Programming</h1></div><div class="content-main"><form method="post"><div class="fieldGroup "><input type="text" name="profession" placeholder="Profession Introduction" maxlength="255" autocomplete="false" required value=""></div><div class="fieldGroup "><input type="text" name="service" placeholder="Service Description" required maxlength="255" autocomplete="false" value=""></div><div class="fieldGroup" style="text-align: center;"><span>Chọn kĩ năng bạn dạy:</span></div><div style="margin: 10px 0 0;" class="fieldGroup"><select name="skills" style="height: 100px" required multiple><%for(int i = 0; i < skills.size(); i++) {%><option value="<%=skills.get(i).getId()%>"><%=skills.get(i).getName()%></option><%}%></select></div><div class="fieldGroup" style="text-align: center;"><input type="number" name="cash" step="1" min="1" placeholder="Giá Thuê Trên Slot"></div><button type="submit"><span>Tạo CV</span></button><input type="hidden" name="type" value="create"></form></div></div></div></div></div></div>';
-                        document.body.appendChild(modal.firstChild);
-                        setTimeout(function () {
-                            document.body.lastChild.children[1].classList.add("in");
-                            document.body.lastChild.firstChild.classList.add("in");
-                            window.onclick = function (e) {
-                                if (!document.getElementsByClassName('modal-content')[0].contains(e.target)) {
-                                    document.body.lastChild.firstChild.classList.remove("in");
-                                    document.body.lastChild.children[1].classList.remove("in");
-                                    setTimeout(function () {
-                                        document.body.style = 'background-color: rgb(233, 235, 238) !important; padding-top: 66px;';
-                                        document.body.removeChild(document.body.lastChild);
-                                        window.onclick = null;
-                                    }, 100)
-                                }
-                            }
-                        }, 1)
-                    } else {
-                        //document.body.style = 'overflow: hidden; padding-right: 17px; background-color: rgb(233, 235, 238) !important; padding-top: 66px;';
-                        document.body.lastChild.children[1].classList.remove("in");
-                        document.body.lastChild.firstChild.classList.remove("in");
-                        setTimeout(function () {
-                            document.body.style = 'background-color: rgb(233, 235, 238) !important; padding-top: 66px;';
-                            document.body.removeChild(document.body.lastChild);
-                            window.onclick = null;
-                        }, 100)
-                    }
-                }
-            } 
+                      
             let cog = document.getElementsByClassName('fas fa-cog')[0].parentNode.children[1];
             let collapse = cog.parentNode.parentNode.parentNode.parentNode.children[1];
             document.getElementsByClassName('fas fa-cog')[0].parentNode.onclick = function () {
@@ -468,18 +512,53 @@
             }
 
         </script>
+        
+        
+        
+<script>
+    if (document.getElementById('createCV') != null) {
+        document.getElementById('createCV').onclick = function () {
+            var modal = document.createElement('div');
+            modal.className = 'modal';
+            var form = document.createElement('form');
+            form.method = 'post';
+            form.className = 'modal-content';
+            form.innerHTML = `
+<form method="post" class="centered-form">
+    <div class="input-field">
+        <input type="text" name="profession" placeholder="Profession Introduction" maxlength="255" autocomplete="false" required value="">
+    </div>
+    <div class="input-field">
+        <input type="text" name="service" placeholder="Service Description" required maxlength="255" autocomplete="false" value="">
+    </div>
+    <div class="centered-text">
+        <span>Chọn kĩ năng bạn dạy:</span>
+    </div>
+        <select name="skills" style="height: 100px" required multiple>
+<%for(int i = 0; i < skills.size(); i++) {%><option value="<%=skills.get(i).getId()%>"><%=skills.get(i).getName()%></option><%
+}%></select>
+    <div class="margin-div"></div>
+    <div class="centered-text">
+        <input type="number" name="cash" step="1" min="1" placeholder="Giá Thuê Trên Slot">
+    </div>
+    <button type="submit" class="submit-button"><span>Tạo CV</span></button>
+    <input type="hidden" name="type" value="create">
+</form>
 
+`;
 
-
-
-
-
-
-
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-        <script>
+            modal.appendChild(form);
+            document.body.appendChild(modal);
+            modal.style.display = "block";
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+ <script>
             // Chọn các phần tử link
             const statisticsLink = document.getElementById('statistics');
             const historyLink = document.getElementById('history');
@@ -520,20 +599,18 @@
 
 
         </script>
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="lib/wow/wow.min.js"></script>
-        <script src="lib/easing/easing.min.js"></script>
-        <script src="lib/waypoints/waypoints.min.js"></script>
-        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
 
-        <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js'></script>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
-        <!-- Template Javascript -->
-        <script src="js/main.js"></script>
-
-    </body>
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
 
 </html>
