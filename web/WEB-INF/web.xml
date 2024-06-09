@@ -40,6 +40,10 @@
         <servlet-name>SkillServlet</servlet-name>
         <servlet-class>Controller.SkillServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminRequestController</servlet-name>
+        <servlet-class>Controller.admin.AdminRequestController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SignInController</servlet-name>
         <url-pattern>/signin</url-pattern>
@@ -87,5 +91,9 @@
     <servlet-mapping>
         <servlet-name>MenteeRequest</servlet-name>
         <url-pattern>/statistic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminRequestController</servlet-name>
+        <url-pattern>/admin/request</url-pattern>
     </servlet-mapping>
 </web-app>

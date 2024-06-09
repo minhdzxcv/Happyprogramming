@@ -15,16 +15,7 @@
 
 
     <head>
-        <style>
-            .img-fixed-size {
-                width: 100%; /* Thiết lập kích thước chiều rộng của ảnh */
-                height: auto; /* Đảm bảo tỷ lệ khung hình được giữ nguyên */
-
-
-            </style>
-
-
-        </style>
+        
 
         <meta charset="utf-8">
         <title>Happy Programming</title>

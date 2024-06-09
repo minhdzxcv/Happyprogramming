@@ -350,7 +350,7 @@ public class RequestDAO {
                 ps.setInt(1, rs.getInt("RequestID"));
                 rs2 = ps.executeQuery();
                 while (rs2.next()) {
-                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("Imageskill"), rs2.getString("Skilldescription")));
+                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("image"), rs2.getString("Description")));
                 }
                 arr.add(r);
             }

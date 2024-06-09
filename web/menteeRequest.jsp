@@ -117,9 +117,10 @@
                 <div class="col-4 mt-3">
                     Total of mentor: ${size}
                 </div>
-                <div class="btn btn-light mt-2">
-                    Back
-                </div>
+              <a href="home" class="btn btn-light mt-2">
+                     Back
+</a>
+
 
             </div>
         </div>

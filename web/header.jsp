@@ -330,11 +330,7 @@
                         <%  session.removeAttribute("alert");
                         }%>
                     </script>
-                </div>
-            </ul>
-        </li>
-    </ul>
-</div>
+               
 
 </header>
 <!-- End Header -->

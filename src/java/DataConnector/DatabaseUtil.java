@@ -14,7 +14,7 @@ import java.sql.SQLException;
  */
 public class DatabaseUtil {
 
-    static String dtbName = "SWP391";
+    static String dtbName = "SWP391_Project";
     static String username = "sa";
     static String password = "123";
 

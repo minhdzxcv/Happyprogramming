@@ -1,12 +1,6 @@
 
 
 
-
-
-
-
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -364,14 +358,14 @@ public class UserDAO {
     public static User register(String username, String password, String email, String phone, String address, String role, String gender, String fullname, String dob) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            if (address == null) {
+            if(address == null) {
                 address = "";
             }
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [username] = ? OR [email] = ?");
             ps.setString(1, username);
             ps.setString(2, email);
             ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            if(!rs.next()) {
                 ps = dbo.prepareStatement("INSERT INTO [User] ([username], [password], [email], [gender], [dob], [phoneNumber], [address], [RoleID], [wallet], [status], [fullname]) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT [roleID] FROM [Role] WHERE [roleName] = ?), 0, 1, ?)");
                 ps.setString(1, username);
                 ps.setString(2, password);
@@ -385,24 +379,23 @@ public class UserDAO {
                 int k = ps.executeUpdate();
                 dbo.commit();
                 User u = UserDAO.getUser(email, password);
-                if (role.equalsIgnoreCase("mentor")) {
-                    ps = dbo.prepareStatement("INSERT INTO [Mentor] ([UserID]) VALUES (?)");
-                    ps.setInt(1, u.getId());
-                    ps.executeUpdate();
-                    dbo.commit();
-                } else {
-                    ps = dbo.prepareStatement("INSERT INTO [Mentee] ([UserID]) VALUES (?)");
-                    ps.setInt(1, u.getId());
-                    ps.executeUpdate();
-                    dbo.commit();
-                }
-                if (k > 0) {
+                    if(role.equalsIgnoreCase("mentor")) {
+                        ps = dbo.prepareStatement("INSERT INTO [Mentor] ([UserID]) VALUES (?)");
+                        ps.setInt(1, u.getId());
+                        ps.executeUpdate();
+                        dbo.commit();
+                    } else {
+                        ps = dbo.prepareStatement("INSERT INTO [Mentee] ([UserID]) VALUES (?)");
+                        ps.setInt(1, u.getId());
+                        ps.executeUpdate();
+                        dbo.commit();
+                    }
+                if(k > 0)
                     return u;
-                }
             }
             rs.close();
             ps.close();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
             dbo.close();
@@ -430,17 +423,7 @@ public class UserDAO {
         return users;
     }
 
-    public static void main(String[] args) {
-        int userId = 10;
-        String newDob = "2003-01-02"; // Use double quotes for the date string
-
-        try {
-            updateDob(userId, newDob);
-            System.out.println("Date of birth updated successfully for user ID: " + userId);
-        } catch (Exception e) {
-            System.err.println("Error updating date of birth: " + e.getMessage());
-        }
-    }
+   
 
 
 public int getUserID(String email) {
@@ -506,6 +489,34 @@ public int getRequestMentor(int id) {
         }
         return 0;
     }
+
+   public static void main(String[] args) {
+        try {
+            // Test data for a single user
+            String username = "ab1cxy111z1111111";
+            String password = "1231";
+            String email = "dung1111111111@gmail.com";
+            String phone = "055272120";
+            String address = "123 Street";
+            String role = "mentor";
+            String gender = "f";
+            String fullname = "John111";
+            String dob = "1990-01-01";
+
+            // Register the user
+            User newUser = UserDAO.register(username, password, email, phone, address, role, gender, fullname, dob);
+
+            // Check the result
+            if (newUser != null) {
+                System.out.println("Registration successful for user: " + newUser.getFullname() + " (Role: " + role + ")");
+            } else {
+                System.out.println("Registration failed for user: " + fullname);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     }
 
 

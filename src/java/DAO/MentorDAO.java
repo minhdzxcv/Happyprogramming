@@ -62,7 +62,7 @@ public class MentorDAO {
                 String avatar = "";
                 if(rs2.next()) {
                     account = rs2.getString("email");
-                    active = rs2.getInt("activeStatus") == 1;
+                    active = rs2.getInt("status") == 1;
                     fullname = rs2.getString("fullname");
                     avatar = rs2.getString("Avatar");
                 }
@@ -263,6 +263,52 @@ public static HashMap<Mentor, MentorDetail> getAllBySkillId(int id) throws Excep
             e.printStackTrace();
         } finally {
             dbo.close();
+        }
+    }
+      public static boolean toggle(boolean type,int id) throws Exception {
+        Connection dbo = DatabaseUtil.getConn();
+        PreparedStatement ps = dbo.prepareStatement("UPDATE [User] SET [status] = "+(type ? 1 : 0)+" WHERE [UserID] = ?");
+        ps.setInt(1, id);
+        int k = ps.executeUpdate();
+        dbo.commit();
+        if(k > 0) {
+            dbo.close();
+            return true;
+        }
+        dbo.close();
+        return false;
+    }
+      
+       public static int getTotalMentor() throws Exception {
+        Connection dbo = DatabaseUtil.getConn();
+        try {
+            PreparedStatement ps = dbo.prepareStatement("  Select count(*) from Mentor");
+           
+            ResultSet rs = ps.executeQuery();
+             while (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return 0;
+    }
+      
+      
+       public static void main(String[] args) {
+        try {
+            int userId = 3; // Thay đổi userId thành ID của người dùng mà bạn muốn thay đổi trạng thái của họ
+            boolean newStatus = true; // Thay đổi newStatus thành true hoặc false tùy thuộc vào trạng thái mới bạn muốn đặt
+
+            boolean success = toggle(newStatus, userId);
+            
+            if (success) {
+                System.out.println("Trạng thái đã được cập nhật thành công!");
+            } else {
+                System.out.println("Không thể cập nhật trạng thái.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
