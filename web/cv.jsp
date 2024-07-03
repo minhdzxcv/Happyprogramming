@@ -156,6 +156,21 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
     border: 1px solid #888;
     width: 80%;
 }
+.modal-content-cv {
+    margin: 15% auto;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-bottom: 100px;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: .3rem;
+    outline: 0
+}
 
 .centered-form {
     display: flex;
@@ -315,7 +330,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                         <div class="col-lg-8">
                                             <div class="card">
                                                 <hr>
-                                                <h3>Thông tin cơ bản</h3>
+                                                <h3 style="margin-left: 10px">Thông tin cơ bản</h3>
 
                                                 <form  method="post">
                                                     <div class="card-body">
@@ -324,7 +339,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                                                 <h6 class="mb-0">Mô tả:</h6>
                                                             </div>
                                                             <div class="col-sm-9 text-secondary">
-                                                                <input class="form-control"type="text" name="description" placeholder="" maxlength="5000" autocomplete="false" value="<%=(m == null || m.getDescription() == null) ? "" : m.getDescription()%>">
+                                                                <textarea class="form-control" name="description" placeholder="" maxlength="5000" autocomplete="false"><%=(m == null || m.getDescription() == null) ? "" : m.getDescription()%></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-3">
@@ -332,14 +347,14 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                                                 <h6 class="mb-0">Thành tựu:</h6>
                                                             </div>
                                                             <div class="col-sm-9 text-secondary">
-                                                                <input class="form-control"type="text" name="achivement" placeholder="" maxlength="5000" autocomplete="false" value="<%=(m == null || m.getAchivement() == null) ? "" : m.getAchivement()%>">
+                                                                <textarea class="form-control"type="text" name="achivement" placeholder="" maxlength="5000" autocomplete="false" value="<%=(m == null || m.getAchivement() == null) ? "" : m.getAchivement()%>"></textarea>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-3">
-                                                            <button class="form-control"type="submit" class="btn-update">Update</button>                                                            
+                                                            <button style="height: 100% ; width: 30% ; margin-left: 290px" class="form-control"type="submit" class="btn-update">Update</button>                                                            
                                                         </div>
                                                         <div class="row mb-3">
-                                                            <button class="form-control"type="reset" class="btn-update">Cancel</button>                                                            
+                                                            <button style="height: 100% ; width: 30% ; margin-left: 290px" class="form-control"type="reset" class="btn-update">Cancel</button>                                                            
                                                         </div>
 
                                                     </div>
@@ -351,8 +366,8 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
 
                                                     <div class="card">
                                                         <hr>
-                                                        <h3>Thông tin CV</h3>
-<%if(cv == null) {%> <p class="control-label">Chưa có CV</p><%} 
+                                                        <h3 style="margin-left: 10px">Thông tin CV</h3>
+                                                        <%if(cv == null) {%> <h2 style="margin-left: 300px" class="control-label">Chưa có CV</h2><%} 
                                                     if(cv != null) {%> 
                                                         <form  method="post">
                                                             <input type="hidden" name="type" value="update">
@@ -362,7 +377,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                                                         <h6 class="mb-0">Profession Introduction:</h6>
                                                                     </div>
                                                                     <div class="col-sm-9 text-secondary">
-                                                                        <input class="form-control" type="text" name="profession" placeholder="" required maxlength="255" autocomplete="false" value="<%=cv.getProfessionIntro() == null ? "" : cv.getProfessionIntro()%>">
+                                                                        <textarea  class="form-control" type="text" name="profession" placeholder="" required maxlength="255" autocomplete="false" value="<%=cv.getProfessionIntro() == null ? "" : cv.getProfessionIntro()%>"></textarea>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row mb-3">
@@ -370,7 +385,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                                                         <h6 class="mb-0">Description:</h6>
                                                                     </div>
                                                                     <div class="col-sm-9 text-secondary">
-                                                                        <input class="form-control"type="text" name="descrip" placeholder="" required maxlength="255" autocomplete="false" value="<%=cv.getDescription() == null ? "" : cv.getDescription()%>">
+                                                                        <textarea  class="form-control"type="text" name="descrip" placeholder="" required maxlength="255" autocomplete="false" value="<%=cv.getDescription() == null ? "" : cv.getDescription()%>"></textarea>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row mb-3">
@@ -401,13 +416,13 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
                                                                 
                                                                 <%}%> 
                                                                 <div class="row mb-3">
-                                                                   <button class="form-control"type="submit" class="btn-update" id="<%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%>"><%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%> </button><%=cv != null ? "</form>" : ""%>
+                                                                   <button style="height: 100% ; width: 30% ; margin-left: 300px" class="form-control"type="submit" class="btn-update" id="<%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%>"><%=(m == null || m.getCvID() == 0) ? "createCV" : "updateCV"%> </button><%=cv != null ? "</form>" : ""%>
                                                                 </div>
                                                                 
 
 
                                                                 <div class="row mb-3">
-                                                                    <button class="form-control"type="reset" class="btn-update">Cancel</button>                                                            
+                                                                    <button style="height: 100% ; width: 30% ; margin-left: 300px" class="form-control"type="reset" class="btn-update">Cancel</button>                                                            
                                                                 </div>
 
                                                             </div>
@@ -522,14 +537,14 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
             modal.className = 'modal';
             var form = document.createElement('form');
             form.method = 'post';
-            form.className = 'modal-content';
+            form.className = 'modal-content-cv';
             form.innerHTML = `
 <form method="post" class="centered-form">
     <div class="input-field">
-        <input type="text" name="profession" placeholder="Profession Introduction" maxlength="255" autocomplete="false" required value="">
+        <textarea style="width: 100%" type="text" name="profession" placeholder="Profession Introduction" maxlength="500" autocomplete="false" required value=""></textarea>
     </div>
     <div class="input-field">
-        <input type="text" name="service" placeholder="Service Description" required maxlength="255" autocomplete="false" value="">
+        <textarea style="width: 100%" type="text" name="service" placeholder="Service Description" required maxlength="500" autocomplete="false" value=""></textarea>
     </div>
     <div class="centered-text">
         <span>Chọn kĩ năng bạn dạy:</span>
@@ -574,7 +589,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
             });
 
             statisticsLink.addEventListener('click', function () {
-                window.location.href = 'statistic';
+                window.location.href = 'statistics';
             });
 
             historyLink.addEventListener('click', function () {

@@ -241,7 +241,7 @@ public class RequestDAO {
         Connection dbo = DatabaseUtil.getConn();
         ArrayList<Request> arr = new ArrayList();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [SendID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [UserID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -274,12 +274,11 @@ public class RequestDAO {
         }
         return arr;
     }
-
-    public static ArrayList<Request> getMenteeRequests(int uid) throws Exception {
+   public static ArrayList<Request> getMenteeRequests(int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         ArrayList<Request> arr = new ArrayList();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [UserID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [SendID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -350,7 +349,7 @@ public class RequestDAO {
                 ps.setInt(1, rs.getInt("RequestID"));
                 rs2 = ps.executeQuery();
                 while (rs2.next()) {
-                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("Imageskill"), rs2.getString("Skilldescription")));
+                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("image"), rs2.getString("Description")));
                 }
                 arr.add(r);
             }
@@ -414,6 +413,41 @@ public class RequestDAO {
             dbo.close();
         }
         return false;
+    }
+     public static void main(String[] args) {
+        try {
+            // Assuming DatabaseUtil.getConn() is a method that returns a Connection object.
+            Connection dbo = DatabaseUtil.getConn();
+            int uid = 4; // replace with the actual user ID you want to test with
+            ArrayList<Request> requests = getMentorRequests(uid);
+
+            for (Request request : requests) {
+                System.out.println("RequestID: " + request.getReason());
+                System.out.println("SendID: " + request.getSendID());
+                System.out.println("UserID: " + request.getUserID());
+                System.out.println("RequestReason: " + request.getMentor());
+                System.out.println("RequestStatus: " + request.getSkillsName());
+               
+                System.out.println("RequestTime: " + request.getRequestTime());
+                System.out.println("DeadlineTime: " + request.getDeadlineTime());
+                System.out.println("Mentor: " + request.getMentor());
+                if (request.getStatus().equalsIgnoreCase("reject")) {
+                    System.out.println("RejectReason: " + request.getRejectReason());
+                }
+                if (request.getStatus().equalsIgnoreCase("done")) {
+                    System.out.println("Rated: " + request.isRated());
+                }
+                System.out.println("Skills:");
+                for (Skill skill : request.getSkills()) {
+                   
+                    System.out.println("  SkillName: " + skill.getName());
+                  
+                }
+                System.out.println("-----------------------------");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
 //    public static void main(String[] args){

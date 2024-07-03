@@ -9,7 +9,6 @@ import DAO.UserDAO;
 import Service.AuthorizationService;
 import Service.MailService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

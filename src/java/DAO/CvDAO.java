@@ -83,7 +83,7 @@ public class CvDAO {
                     ps.setInt(1, rs2.getInt("SkillID"));
                     ResultSet rs3 = ps.executeQuery();
                     rs3.next();
-                    cv.getSkills().add(new Skill(rs2.getInt("SkillID"), rs3.getString("SkillName"), rs3.getInt("enable") == 1, rs3.getString("Imageskill"), rs3.getString("Skilldescription")));
+                    cv.getSkills().add(new Skill(rs2.getInt("SkillID"), rs3.getString("SkillName"), rs3.getInt("enable") == 1, rs3.getString("image"), rs3.getString("Description")));
                 }
                 arr.add(cv);
             }

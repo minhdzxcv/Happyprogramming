@@ -4,31 +4,17 @@
  */
 package Controller;
 
-import DAO.CvDAO;
 import DAO.RequestDAO;
-import DAO.SkillDAO;
 import DAO.UserDAO;
-import DataConnector.DatabaseUtil;
-import Service.AuthorizationService;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
-import model.CV;
 import model.Request;
-import model.Skill;
 import model.User;
 
 /**

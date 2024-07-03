@@ -51,14 +51,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-                 <div class="input-group">
-            <div class="input-group-prepend"  >
-              <button id="button-addon8" type="button" onclick="searching()" class="btn btn-danger" >
-                  <i class="fa fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
-            <input placeholder="Skill ..." type="text" class="form-control" value="" id="search-skill">
-          </div>
+              
             
             
             <div  class="collapse navbar-collapse" id="navbarCollapse">
@@ -90,19 +83,12 @@
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
-             <div class="input-group">
-            <div class="input-group-prepend"  >
-              <button id="button-addon8" type="button" onclick="searching()" class="btn btn-danger" >
-                  <i class="fa fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
-          <input placeholder="Skill ..." type="text" class="form-control" value="" id="search-skill">
-          </div>
+            
             
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0">
                     <a href="home.jsp" class="nav-item nav-link">Home</a>
-                    <a href="#" class="nav-item nav-link">Messenger</a>
+                    <a href="chat" class="nav-item nav-link">Messenger</a>
                     <a href="request" class="nav-item nav-link">List Request</a>
                     <a href="Contact.jsp" class="nav-item nav-link active">Contact</a>
                 </div>
@@ -158,9 +144,9 @@
     </li>
 </ul>
 
-    
+     </nav>
  </div>
- </nav>
+
 
 <!-- Custom CSS -->
 <style>
@@ -330,11 +316,7 @@
                         <%  session.removeAttribute("alert");
                         }%>
                     </script>
-                </div>
-            </ul>
-        </li>
-    </ul>
-</div>
+               
 
 </header>
 <!-- End Header -->

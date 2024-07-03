@@ -55,23 +55,26 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Request</th>
-                                    <th>Deadline time</th>
-                                    <th>Subject</th>
-                                    <th>Skill</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style="font-weight: bold; color: black">Subject</th>
+                                    <th style="font-weight: bold; color: black">Reason</th>
+                                    <th style="font-weight: bold; color: black">Mentor</th>
+                                    <th style="font-weight: bold; color: black">Skills</th>
+                                    <th style="font-weight: bold; color: black">Deadline Date</th>
+                                    <th style="font-weight: bold; color: black">Status</th>
+                                    <th style="font-weight: bold; color: black">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <c:if test="${not empty requests}">
                                 <c:forEach var="req" items="${requests}">
                                     <tr>
-                                        <td>${req.reason}</td>
-                                        <td>${req.deadlineTime}</td>
                                         <td>${req.subject}</td>
+                                        <td>${req.reason}</td>
+                                        <td>${req.mentor}</td>
                                         <td>${req.getSkillsName()}</td>
+                                        <td>${req.deadlineTime}</td>
                                         <td>${req.status}</td>
+                                       
                                         <td>
 
                                             <button type="button" class="btn btn-primary btn-sm" onclick="#">Update</button>
@@ -87,6 +90,8 @@
                                     <td>N/A</td>
                                     <td>N/A</td>
                                     <td>N/A</td>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
                                     <td></td>
                                 </tr>
                             </c:if>
@@ -95,7 +100,7 @@
                 </div>
 
                 <div class="my-4">
-                    <a href="statistic" class="btn btn-primary">View statistic request</a>
+                    <a href="statistics" class="btn btn-primary">View statistic request</a>
                     <a href="CreateRequest" class="btn btn-primary">Create request</a>
                 </div>
             </c:if>
@@ -108,22 +113,24 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Request</th>
-                                    <th>Deadline Time</th>
-                                    <th>Skill</th>
-                                    <th>Subject</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style="font-weight: bold; color: black">Subject</th>
+                                    <th style="font-weight: bold; color: black">Reason</th>
+                                    <th style="font-weight: bold; color: black">Sender</th>
+                                    <th style="font-weight: bold; color: black">Skills</th>
+                                    <th style="font-weight: bold; color: black">Deadline Date</th>
+                                    <th style="font-weight: bold; color: black">Status</th>
+                                    <th style="font-weight: bold; color: black">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                             <c:if test="${not empty requests}">
                                 <c:forEach var="req" items="${requests}">
                                     <tr>
-                                        <td>${req.reason}</td>
-                                        <td>${req.deadlineTime}</td>
-                                        <td>${req.getSkillsName()}</td>
                                         <td>${req.subject}</td>
+                                        <td>${req.reason}</td>
+                                        <td>${req.send}</td>
+                                        <td>${req.getSkillsName()}</td>
+                                        <td>${req.deadlineTime}</td>
                                         <td>${req.status}</td>
                                         <td>
                                             <button type="button" class="btn btn-primary btn-sm" onclick="#">Accept</button>
@@ -134,6 +141,8 @@
                             </c:if>
                             <c:if test="${empty requests}">
                                 <tr>
+                                    <td>N/A</td>
+                                    <td>N/A</td>
                                     <td>N/A</td>
                                     <td>N/A</td>
                                     <td>N/A</td>

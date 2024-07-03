@@ -91,8 +91,8 @@
               <div class="row">
                 <div class="col-12 col-sm-auto mb-3">
                   <div class="mx-auto" style="width: 140px;">
-                    <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
-                        <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;"><img src="<%=um.getAvatar()%>" alt="alt"/></span>
+                    <div class="d-flex justify-content-center align-items-center rounded" style=" background-color: rgb(233, 236, 239);">
+                      <span style="color: rgb(166, 168, 170); font: bold 8pt Arial"><img  src="<%=um.getAvatar()%>" alt="alt" width="145.5px" height="164px"/></span>
                     </div>                   
                   </div>                    
                 </div>                    
@@ -182,13 +182,15 @@
                           <div class="col">
                             <div class="form-group">
                               <label>Full Name</label>
-                              <input class="form-control" type="text" name="name" placeholder="John Smith" value="<%=currMentor.getFullname()%>">
+                            
+                              <input class="form-control" type="text" name="name" placeholder="John Smith" value="<%=currMentor.getFullname()%>" readonly>
+
                             </div>
                           </div>
                           <div class="col">
                             <div class="form-group">
                               <label>Phone</label>
-                              <input class="form-control" type="text" name="username" placeholder="johnny.s" value="<%=um.getPhone()%>">
+                              <input class="form-control" type="text" name="username" placeholder="johnny.s" value="<%=um.getPhone()%>" readonly>
                             </div>
                           </div>
                         </div>
@@ -196,7 +198,7 @@
                           <div class="col">
                             <div class="form-group">
                               <label>Email</label>
-                              <input class="form-control" type="text" placeholder="<%=um.getEmail()%>">
+                              <input class="form-control" type="text" placeholder="<%=um.getEmail()%>" readonly>
                             </div>
                           </div>
                         </div>
@@ -204,23 +206,23 @@
                           <div class="col mb-3">
                             <div class="form-group">
                               <label>Mô tả</label>
-                              <textarea class="form-control" rows="" placeholder="<%=currMentor.getDescription()%>"></textarea>
+                              <textarea class="form-control" rows="" placeholder="<%=currMentor.getDescription()%>" readonly></textarea>
                             </div>
                             <div class="form-group">
                               <label>Thành tựu</label>
-                              <textarea class="form-control" rows="" placeholder="<%=currMentor.getAchivement()%>"></textarea>
+                              <textarea class="form-control" rows="" placeholder="<%=currMentor.getAchivement()%>" readonly></textarea>
                             </div>
                             <div class="form-group">
                               <label>Profession Introduction</label>
-                              <textarea class="form-control" rows="" placeholder="<%=currCV.getProfessionIntro()%>"></textarea>
+                              <textarea class="form-control" rows="" placeholder="<%=currCV.getProfessionIntro()%>" readonly></textarea>
                             </div>
                             <div class="form-group">
                               <label>Description</label>
-                              <textarea class="form-control" rows="" placeholder="<%=currCV.getDescription()%>"></textarea>
+                              <textarea class="form-control" rows="" placeholder="<%=currCV.getDescription()%>" readonly></textarea>
                             </div>
                             <div class="form-group">
                               <label>Giá thuê mỗi slots</label>
-                              <textarea class="form-control" rows="" placeholder="<%=currCV.getMoneyofslot()%>"></textarea>
+                              <textarea class="form-control" rows="" placeholder="<%=currCV.getMoneyofslot()%>" readonly></textarea>
                             </div>
                             
                           </div>
@@ -442,10 +444,11 @@
         <span class="stars1">****</span>
         <span class="review-count1"></span>
     </div>
-    <div class="buttons1">
-        <button class="request-button1">TAO REQUEST</button>
-        <button class="chat-button1">CHAT</button>
-    </div>
+   <div class="buttons1">
+    <button class="request-button1" onclick="window.location.href='#'">TAO REQUEST</button>
+    <button class="chat-button1" onclick="window.location.href='chat?id=<%=currMentor.getId()%>'">CHAT</button>
+</div>
+
 </div>
 
       </div>

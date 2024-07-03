@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 public class User {
     
    public String username, password, email, phone, address, role;
-  public  String avatar, fullname;
+   public String avatar, fullname;
    public Date Dob;
    public int wallet, id;
    public boolean status;

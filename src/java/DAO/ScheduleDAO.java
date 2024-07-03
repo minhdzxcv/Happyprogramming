@@ -28,7 +28,7 @@ public class ScheduleDAO {
         int percent = 0;
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT Count([SlotID]) as Total, (SELECT Count([SlotID]) FROM [Slot] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlot] WHERE [RequestID] = ?) AND [Status] = N'Done') as Done FROM [RequestSlot] WHERE [RequestID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("SELECT Count([SlotID]) as Total, (SELECT Count([SlotID]) FROM [Slots] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlots] WHERE [RequestID] = ?) AND [Status] = N'Done') as Done FROM [RequestSlots] WHERE [RequestID] = ?");
             ps.setInt(1, id);
             ps.setInt(2, id);
             ResultSet rs = ps.executeQuery();
@@ -44,7 +44,7 @@ public class ScheduleDAO {
     public static void updateSlot(int id, String link, float hour, Timestamp start) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("UPDATE [Slot] SET [Link] = ?, [Time] = ?, [startAt] = ? WHERE [SlotID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [Slots] SET [Link] = ?, [Time] = ?, [startAt] = ? WHERE [SlotID] = ?");
             ps.setString(1, link);
             ps.setFloat(2, hour);
             ps.setTimestamp(3, start);
@@ -60,17 +60,17 @@ public class ScheduleDAO {
     public static boolean deleteSlot(int id) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [RequestID] = (SELECT [RequestID] FROM [RequestSlot] WHERE [SlotID] = ?) AND [RequestStatus] = N'Accept'");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [RequestID] = (SELECT [RequestID] FROM [RequestSlots] WHERE [SlotID] = ?) AND [RequestStatus] = N'Accept'");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
                 dbo.close();
                 return false;
             } else {
-                ps = dbo.prepareStatement("DELETE FROM [RequestSlot] WHERE [SlotID] = ?");
+                ps = dbo.prepareStatement("DELETE FROM [RequestSlots] WHERE [SlotID] = ?");
                 ps.setInt(1, id);
                 ps.executeUpdate();
-                ps = dbo.prepareStatement("DELETE FROM [Slot] WHERE [SlotID] = ?");
+                ps = dbo.prepareStatement("DELETE FROM [Slots] WHERE [SlotID] = ?");
                 ps.setInt(1, id);
                 ps.executeUpdate();
                 dbo.commit();
@@ -93,7 +93,7 @@ public class ScheduleDAO {
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
                     + "      ,[MenteeID], [Status],\n"
-                    + " (SELECT [fullname] FROM [User] WHERE [UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID])) as Mentor, (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID]) as MentorID FROM [Slot] WHERE [SlotID] = ?");
+                    + " (SELECT [fullname] FROM [User] WHERE [UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID])) as Mentor, (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID]) as MentorID FROM [Slots] WHERE [SlotID] = ?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
@@ -108,7 +108,7 @@ public class ScheduleDAO {
         return s;
     }
     
-    public static int weekCount(ArrayList<Slot> array) {
+   public static int weekCount(ArrayList<Slot> array) {
         Collections.sort(array, new Comparator<Slot>() {
             @Override
             public int compare(Slot o1, Slot o2) {
@@ -129,23 +129,22 @@ public class ScheduleDAO {
         }
         return r;
     }
-
     public static boolean confirmSlot(int sid, int uid, String role) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT Status FROM Slot WHERE SlotID = ? ");
+            PreparedStatement ps = dbo.prepareStatement("SELECT Status FROM Slots WHERE SlotID = ? ");
             ps.setInt(1, sid);
             ResultSet rs = ps.executeQuery();
             rs.next();
             String status = rs.getString("Status");
             if (status.toLowerCase().contains("not confirm")) {
                 if (role.equalsIgnoreCase("mentor")) {
-                    ps = dbo.prepareStatement("UPDATE Slot SET Status = N'Mentor Confirm' WHERE SlotID = ? AND ScheduleID in (SELECT ScheduleID From Schedule WHERE MentorID = ?)");
+                    ps = dbo.prepareStatement("UPDATE Slots SET Status = N'Mentor Confirm' WHERE SlotID = ? AND ScheduleID in (SELECT ScheduleID From Schedule WHERE MentorID = ?)");
                     ps.setInt(1, sid);
                     ps.setInt(2, uid);
                     ps.executeUpdate();
                 } else {
-                    ps = dbo.prepareStatement("UPDATE Slot SET Status = N'Mentee Confirm' WHERE SlotID = ? AND MenteeID = ?");
+                    ps = dbo.prepareStatement("UPDATE Slots SET Status = N'Mentee Confirm' WHERE SlotID = ? AND MenteeID = ?");
                     ps.setInt(1, sid);
                     ps.setInt(2, uid);
                     ps.executeUpdate();
@@ -153,7 +152,7 @@ public class ScheduleDAO {
             } else {
                 if (status.toLowerCase().contains("mentor confirm")) {
                     if (role.equalsIgnoreCase("mentee")) {
-                        ps = dbo.prepareStatement("UPDATE Slot SET Status = N'Done' WHERE SlotID = ? AND MenteeID = ?");
+                        ps = dbo.prepareStatement("UPDATE Slots SET Status = N'Done' WHERE SlotID = ? AND MenteeID = ?");
                         ps.setInt(1, sid);
                         ps.setInt(2, uid);
                         ps.executeUpdate();
@@ -179,7 +178,7 @@ public class ScheduleDAO {
                     }
                 } else if (status.toLowerCase().contains("mentee confirm")) {
                     if (role.equalsIgnoreCase("mentor")) {
-                        ps = dbo.prepareStatement("UPDATE Slot SET Status = N'Done' WHERE SlotID = ? AND ScheduleID in (SELECT ScheduleID From Schedule WHERE MentorID = ?)");
+                        ps = dbo.prepareStatement("UPDATE Slots SET Status = N'Done' WHERE SlotID = ? AND ScheduleID in (SELECT ScheduleID From Schedule WHERE MentorID = ?)");
                         ps.setInt(1, sid);
                         ps.setInt(2, uid);
                         ps.executeUpdate();
@@ -258,7 +257,6 @@ public class ScheduleDAO {
         });
         return copy;
     }
-
     public static ArrayList<Slot> getFreeSlots(java.util.Date date, int uid) throws Exception {
         ArrayList<Slot> arr = new ArrayList();
         Connection dbo = DatabaseUtil.getConn();
@@ -269,7 +267,7 @@ public class ScheduleDAO {
                     + "      ,[Link]\n"
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
-                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slot].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slot].[SkillID]) as [Skill] FROM [Slot] WHERE [SkillID] IS NULL AND [startAt] > ? AND [ScheduleID] in (SELECT [ScheduleID] FROM [Schedule] WHERE [MentorID] = ?) ORDER BY [StartAt]");
+                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slots].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slots].[SkillID]) as [Skill] FROM [Slots] WHERE [SkillID] IS NULL AND [startAt] > ? AND [ScheduleID] in (SELECT [ScheduleID] FROM [Schedule] WHERE [MentorID] = ?) ORDER BY [StartAt]");
             ps.setInt(1, uid);
             ps.setTimestamp(2, Timestamp.from(date.toInstant()));
             ps.setInt(3, uid);
@@ -301,7 +299,7 @@ public class ScheduleDAO {
                     + "      ,[Link]\n"
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
-                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [User].[UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID])) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slot].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slot].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID]) as [MentorID] FROM [Slot] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlot] WHERE [RequestID] = ?)");
+                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [User].[UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID])) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slots].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slots].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID]) as [MentorID] FROM [Slots] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlots] WHERE [RequestID] = ?)");
             ps.setInt(1, rid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -325,7 +323,7 @@ public class ScheduleDAO {
                     + "      ,[Link]\n"
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
-                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [User].[UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID])) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slot].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slot].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID]) as [MentorID] FROM [Slot] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlot] WHERE [RequestID] = ?) ORDER BY [StartAt]");
+                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [User].[UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID])) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slots].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slots].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID]) as [MentorID] FROM [Slots] WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlot] WHERE [RequestID] = ?) ORDER BY [StartAt]");
             ps.setInt(1, rid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -354,7 +352,7 @@ public class ScheduleDAO {
                     + "      ,[Link]\n"
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
-                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slot].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slot].[SkillID]) as [Skill] FROM [Slot] WHERE ScheduleID = (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?) ORDER BY [StartAt]");
+                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentor], (SELECT [fullname] FROM [User] WHERE [UserID] = [Slots].[MenteeID]) as [Mentee], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slots].[SkillID]) as [Skill] FROM [Slots] WHERE ScheduleID = (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?) ORDER BY [StartAt]");
             ps.setInt(1, uid);
             ps.setInt(2, year);
             ps.setInt(3, week);
@@ -386,7 +384,7 @@ public class ScheduleDAO {
                     + "      ,[Link]\n"
                     + "      ,[ScheduleID]\n"
                     + "      ,[SkillID]\n"
-                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentee], (SELECT [fullname] FROM [User] WHERE [UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID])) as [Mentor], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slot].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slot].[ScheduleID]) as [MentorID] FROM [Slot] WHERE ScheduleID in (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ?) AND [MenteeID] = ?");
+                    + "      ,[MenteeID], [Status], (SELECT [fullname] FROM [User] WHERE [UserID] = ?) as [Mentee], (SELECT [fullname] FROM [User] WHERE [UserID] = (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID])) as [Mentor], (SELECT [SkillName] FROM [Skills] WHERE [SkillID] = [Slots].[SkillID]) as [Skill], (SELECT [MentorID] FROM [Schedule] WHERE [ScheduleID] = [Slots].[ScheduleID]) as [MentorID] FROM [Slots] WHERE ScheduleID in (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ?) AND [MenteeID] = ?");
             ps.setInt(1, uid);
             ps.setInt(2, year);
             ps.setInt(3, week);
@@ -418,7 +416,7 @@ public class ScheduleDAO {
             ps.setInt(3, uid);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                ps = dbo.prepareStatement("INSERT INTO [Slot] ([Link], [Time], [startAt], [ScheduleID]) VALUES (?, ?, ?, (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?))");
+                ps = dbo.prepareStatement("INSERT INTO [Slots] ([Link], [Time], [startAt], [ScheduleID]) VALUES (?, ?, ?, (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?))");
                 ps.setString(1, link);
                 ps.setFloat(2, hour);
                 ps.setTimestamp(3, date);
@@ -433,7 +431,7 @@ public class ScheduleDAO {
                 ps.setInt(2, week);
                 ps.setInt(3, uid);
                 ps.executeUpdate();
-                ps = dbo.prepareStatement("INSERT INTO [Slot] ([Link], [Time], [startAt], [ScheduleID]) VALUES (?, ?, ?, (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?))");
+                ps = dbo.prepareStatement("INSERT INTO [Slots] ([Link], [Time], [startAt], [ScheduleID]) VALUES (?, ?, ?, (SELECT ScheduleID FROM Schedule WHERE [Year] = ? AND [Week] = ? AND [MentorID] = ?))");
                 ps.setString(1, link);
                 ps.setFloat(2, hour);
                 ps.setTimestamp(3, date);
@@ -447,6 +445,31 @@ public class ScheduleDAO {
             e.printStackTrace();
         } finally {
             dbo.close();
+        }
+    }
+    
+       public static void main(String[] args) {
+        try {
+            // Define the parameters
+            int year = 2024;
+            int week = 2;
+            int uid = 3; // Example user ID
+
+            // Call the getSlots method
+            ArrayList<Slot> slots = getSlots(year, week, uid);
+
+            // Display the results
+            for (Slot slot : slots) {
+               
+                System.out.println("Link: " + slot.getLink());
+                System.out.println("Mentor: " + slot.getMentor());
+                System.out.println("Skill: " + slot.getSkill());
+                System.out.println("Mentee: " + slot.getMentee());
+                System.out.println("Status: " + slot.getStatus());
+                System.out.println("--------------------------------");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -18,8 +18,6 @@ import model.Mentor;
 import model.User;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 @MultipartConfig(
@@ -111,9 +109,9 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
      if (updatedDob != null && !updatedDob.isEmpty() && !u.getDob().equals(updatedDob)) {
             try {
                 UserDAO.updateDob(u.getId(), updatedDob);
-                System.out.println("a");
+             
             } catch (Exception e) {
-               System.out.println("b");
+              
             }
         }
 
@@ -153,7 +151,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         BufferedImage img = ImageIO.read(avatarPart.getInputStream());
         
         // Define file paths
-        String relativePath = "/avatar";
+        String relativePath = "avatar";
         String absolutePath = request.getServletContext().getRealPath(relativePath);
         
         // Ensure the directory exists
@@ -163,11 +161,11 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         }
         
         // Generate unique file name based on user info
-        String fileName = u.getUsername() + "_" + u.getId() + ".png";
+        String fileName = u.getUsername() + "_" + u.getId() + ".jpg";
         
         // Write the image to the file
         File outputFile = new File(directory, fileName);
-        ImageIO.write(img, "png", outputFile);
+        ImageIO.write(img, "jpg", outputFile);
         
         // Update the user's avatar path in the database
         String avatarPath = relativePath + "/" + fileName;

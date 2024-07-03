@@ -10,9 +10,7 @@ import Service.AuthorizationService;
 import DAO.UserDAO;
 import model.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -92,7 +90,7 @@ public class SignInController extends HttpServlet {
                     }
                     request.getSession().setAttribute("email", u);
                     if(remember != null) {
-                        Cookie c = new Cookie("email", "Email|"+email+"_Pass|"+password);
+                        Cookie c = new Cookie("email", "email|"+email+"_Pass|"+password);
                         c.setMaxAge(60*24*7);
                         response.addCookie(c);
                     } else {
@@ -120,7 +118,7 @@ public class SignInController extends HttpServlet {
         for (int i = 0; i < cs.length; i++) {
             if(cs[i].getName().equals("email")) {
                 String[] atr = cs[i].getValue().split("_");
-                request.setAttribute("email", atr[0].replace("Email|", ""));
+                request.setAttribute("email", atr[0].replace("email|", ""));
                 request.setAttribute("password", atr[1].replace("Pass|", ""));
                 break;
             }

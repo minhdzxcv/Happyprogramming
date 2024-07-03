@@ -20,7 +20,7 @@ public class RateDAO {
     public static void Rating(int rid, int noStar, String comment) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [Rating] ([MentorID], [MenteeID], [noStar], [ratingComment], [RequestID]) VALUES ((SELECT [UserID] FROM [Request] WHERE [RequestID] = ?), (SELECT [SenderID] FROM [Request] WHERE [RequestID] = ?), ?, ?, ?)");
+            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [Rating] ([MentorID], [MenteeID], [Star], [ratingComment], [RequestID]) VALUES ((SELECT [UserID] FROM [Request] WHERE [RequestID] = ?), (SELECT [SenderID] FROM [Request] WHERE [RequestID] = ?), ?, ?, ?)");
             ps.setInt(1, rid);
             ps.setInt(2, rid);
             ps.setInt(3, noStar);

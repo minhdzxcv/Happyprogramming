@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@page import="java.util.ArrayList, model.User, model.Mentor, model.Mentee , DAO.UserDAO" %>
-<%@page import="java.util.List" %>
+<%@page import="DAO.UserDAO" %>
+<%@page import="model.Skill, java.util.ArrayList, model.User, java.text.SimpleDateFormat, model.Mentor, model.Mentee, model.MenteeStatistic, model.MentorStatistic" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -154,122 +154,176 @@
         <link href="css/style.css" rel="stylesheet">
     </head>
 
-    <body>
-        <div class="container">
-        <!-- Spinner Start -->
-        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-        <!-- Spinner End -->
+    </div>
+    <!-- Spinner End -->
 
-        <%@include file="header.jsp" %>
-        <div class="container mt-4">
-        <div class="row">
-            <!-- Cột trái -->
-            <div class="col-sm-4">
-                <div class="container light-style flex-grow-1 container-p-y">
-                    <h4 class="font-weight-bold py-3 mb-4">TÀI KHOẢN</h4>
 
-                    <div class="card overflow-hidden">
-                        <div class="row no-gutters row-bordered row-border-light">
-                            <div class="col-md-12 pt-0">
-                                <div class="list-group list-group-flush account-settings-links">
-                                    <a id="general" class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">General</a>
-                                    <% if (u.getRole().equalsIgnoreCase("mentor")) { %>
-                                        <a id="cv" class="list-group-item list-group-item-action" data-toggle="list" href="#">CV</a>
-                                        <a id="statistics" class="list-group-item list-group-item-action" data-toggle="list" href="#">Request statistics</a>
-                                    <% } else { %>
-                                        <a id="statistics" class="list-group-item list-group-item-action" data-toggle="list" href="#">Request statistics</a>
-                                    <% } %>
-                                    <a id="password" class="list-group-item list-group-item-action" data-toggle="list" href="#">Change password</a>
-                                    <a id="history" class="list-group-item list-group-item-action" data-toggle="list" href="#">Transaction history</a>
-                                    <a id="pay" class="list-group-item list-group-item-action" data-toggle="list" href="#">Pay</a>
-                                    <a id="wallet" class="list-group-item list-group-item-action" data-toggle="list" href="#">Wallet</a>
+   <%@include file="header.jsp" %>
+
+    
+<div class="container light-style flex-grow-1 container-p-y">
+
+    <h4 class="font-weight-bold py-3 mb-4">
+      TÀI KHOẢN
+    </h4>
+
+    <div class="card overflow-hidden">
+  <div class="row no-gutters row-bordered row-border-light">
+      <div class="col-md-3 pt-0">
+          <div class="list-group list-group-flush account-settings-links">                  
+              <a id="general" class="list-group-item list-group-item-action active" data-toggle="list" href="#account-general">General</a>
+              <%if(u.getRole().equalsIgnoreCase("mentor")) {%>
+              <a id="cv" class="list-group-item list-group-item-action" data-toggle="list" href="#">CV</a>    
+              <a id="statistics" class="list-group-item list-group-item-action " data-toggle="list" href="#">Request statistics</a>
+              <%}else {%>
+              <a id="statistics" class="list-group-item list-group-item-action " data-toggle="list" href="#">Request statistics</a>
+              <%}%>
+              <a id="password" class="list-group-item list-group-item-action " data-toggle="list" href="#">Change password</a>  
+              
+              <a id="history" class="list-group-item list-group-item-action " data-toggle="list" href="#">Transaction history</a>                      
+              <a id="pay" class="list-group-item list-group-item-action " data-toggle="list" href="#">Pay</a>
+              <a id="wallet" class="list-group-item list-group-item-action " data-toggle="list" href="#">Wallet</a>           
+                              
+          </div>
+      </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                 
+                 <h3>Thống Kê Request</h3>
+                            <%  if(u.getRole().equalsIgnoreCase("mentee")) {
+                                MenteeStatistic ms = (MenteeStatistic)request.getAttribute("mstatistic");%>
+                                <div class="col-md-6">
+                                    <div>
+                                        <p>Tổng số Request đã gửi: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getTotalRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tổng số Request bị từ chối: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getRejectedRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tổng số Request được chấp thuận: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getAcceptedRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p class="control-label">Tổng thời gian học: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getTotalHours()%> giờ</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tổng số Mentor yêu cầu: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getTotalMentor()%> mentors</span></p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Cột phải -->
-            <div class="col-md-8">
-                <div class="card p-4">
-                    <h3>Thống Kê Request</h3>
-                    <hr>
-                    <p>TỔNG SỐ REQUEST NHẬN ĐƯỢC:</p>
-                    <hr>
-                    <p>TỔNG SỐ REQUEST ĐÃ TỪ CHỐI:</p>
-                    <hr>
-                    <p>TỈ LỆ TỪ CHỐI REQUEST:</p>
-                    <hr>
-                    <p>TỔNG SỐ REQUEST ĐÃ CHẤP THUẬN:</p>
-                    <hr>
-                    <p>ĐÁNH GIÁ TỪ HỌC VIÊN:</p>
-                    <hr>
-                    <p>TỈ LỆ HOÀN THÀNH REQUEST:</p>
-                </div>
-            </div>
-        
-        <%@include file="footer.jsp" %>
-        <!-- Footer End -->
+                                    <%} else {
+                                    MentorStatistic ms = (MentorStatistic)request.getAttribute("mstatistic");
+                                    %>
+                                <div class="col-md-6">
+                                    <div>
+                                        <p>Tổng số Request nhận được: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getInvitedRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tổng số Request đã từ chối: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getRejectedRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tỉ lệ từ chối Request: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getRejectPercent() * 100%> %</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tổng số Request đã chấp thuận: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getAccepedRequest()%> requests</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Đánh Giá từ học viên: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getRating()%> sao</span></p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <p>Tỉ lệ hoàn thành request: <span style="color:black; font-weight: bold; text-transform: none"><%=ms.getCompletePercent()*100%> %</span></p>
+                                    </div>
+                                </div>
+                                    <% }%>
+                            <%if(request.getAttribute("error") != null) {%>
+                            <span class="err-message"><%=(String)request.getAttribute("error")%></span>
+                            <% } %>
+        </div>
+      </div>
+    </div>
 
-        <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="lib/wow/wow.min.js"></script>
-        <script src="lib/easing/easing.min.js"></script>
-        <script src="lib/waypoints/waypoints.min.js"></script>
-        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-        <!-- Template Javascript -->
-        <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js'></script>
-        <script src="js/main.js"></script>
-        <script>
-            // Chọn các phần tử link
-            const statisticsLink = document.getElementById('statistics');
-            const historyLink = document.getElementById('history');
-            const payLink = document.getElementById('pay');
-            const walletLink = document.getElementById('wallet');
-            const passwordLink = document.getElementById('password');
-            const generalLink = document.getElementById('general');
-            const cvLink = document.getElementById('cv');
+  </div>
 
 
-            // Thêm sự kiện click cho từng link
-            passwordLink.addEventListener('click', function () {
-                window.location.href = 'setting';
-            });
-            statisticsLink.addEventListener('click', function () {
-                window.location.href = 'statistics';
-            });
-            historyLink.addEventListener('click', function () {
-                window.location.href = 'transaction';
-            });
-            payLink.addEventListener('click', function () {
-                window.location.href = 'bank';
-            });
-            walletLink.addEventListener('click', function () {
-                window.location.href = 'wallet';
-            });
-            cvLink.addEventListener('click', function () {
-                window.location.href = 'cv';
-            });
-            generalLink.addEventListener('click', function () {
-                window.location.href = 'profile';
-            });
+    
+   <%@include file="footer.jsp" %>
+    <!-- Footer End -->
 
-            // Hiển thị ảnh mới chọn
-            document.getElementById('avatarInput').addEventListener('change', function (event) {
-                const [file] = event.target.files;
-                if (file) {
-                    document.getElementById('avatarPreview').src = URL.createObjectURL(file);
-                }
-            });
-        </script>
-        s/bootstrap.bundle.min.js'></script>
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script>
+    // Chọn các phần tử link
+    const statisticsLink = document.getElementById('statistics');
+    const historyLink = document.getElementById('history');
+    const payLink = document.getElementById('pay');
+    const walletLink = document.getElementById('wallet');
+    const passwordLink = document.getElementById('password');
+    const generalLink = document.getElementById('general');
+    const cvLink = document.getElementById('cv');
+
+    // Thêm sự kiện click cho từng link
+    passwordLink.addEventListener('click', function() {
+        window.location.href = 'setting';
+    });
+    
+    statisticsLink.addEventListener('click', function() {
+        window.location.href = 'statistics';
+    });
+
+    historyLink.addEventListener('click', function() {
+        window.location.href = 'transaction';
+    });
+
+    payLink.addEventListener('click', function() {
+        window.location.href = 'bank';
+    });
+
+    walletLink.addEventListener('click', function() {
+        window.location.href = 'wallet';
+    });
+    
+    cvLink.addEventListener('click', function() {
+        window.location.href = 'cv';
+    });
+    generalLink.addEventListener('click', function() {
+        window.location.href = 'profile';
+    });
+       
+    
+    
+</script>
+
+
+<script src='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js'></script>
 </body>
+
 </html>

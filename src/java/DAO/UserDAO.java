@@ -1,12 +1,6 @@
 
 
 
-
-
-
-
-
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -22,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Mentee;
 import model.Mentor;
-import model.RequestDTO;
+
 import model.User;
 
 /**
@@ -30,12 +24,7 @@ import model.User;
  * @author TGDD
  */
 public class UserDAO {
-    
 
-    
-    
-    
-    
     public static int getWallet(int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         int wallet = 0;
@@ -274,51 +263,7 @@ public class UserDAO {
         return false;
     }
     
-    public User getUserById(int id) {
-        User user = null;
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            connection = DatabaseUtil.getConn();
-            preparedStatement = connection.prepareStatement("SELECT * FROM [User] WHERE UserID = ?");
-            preparedStatement.setInt(1, id);
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                user = new User();
-                user.id = resultSet.getInt("UserID");
-                user.username = resultSet.getString("username");
-                user.password = resultSet.getString("password");
-                user.email = resultSet.getString("email");
-                user.phone = resultSet.getString("phoneNumber");
-                user.address = resultSet.getString("address");
-                user.role = resultSet.getString("roleID");
-                user.avatar = resultSet.getString("Avatar");
-                user.fullname = resultSet.getString("fullname");
-                user.Dob = resultSet.getDate("dob");
-                user.wallet = resultSet.getInt("wallet");
-                user.status = resultSet.getBoolean("status");
-                user.gender = resultSet.getBoolean("gender");
-                user.isValidate = resultSet.getBoolean("isValidate");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return user;
-    }
-    
-      public static boolean isSignInAdmin(String email, String username) throws Exception {
+    public static boolean isSignInAdmin(String email, String username) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [email] = ? AND [username] = ? AND [roleID] IN (1,2); ");
@@ -372,7 +317,6 @@ public class UserDAO {
         return null;
     }
 
-     
     public static Object getRole(int id, String role) {
         Connection dbo = DatabaseUtil.getConn();
         try {
@@ -414,14 +358,14 @@ public class UserDAO {
     public static User register(String username, String password, String email, String phone, String address, String role, String gender, String fullname, String dob) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            if (address == null) {
+            if(address == null) {
                 address = "";
             }
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [User] WHERE [username] = ? OR [email] = ?");
             ps.setString(1, username);
             ps.setString(2, email);
             ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
+            if(!rs.next()) {
                 ps = dbo.prepareStatement("INSERT INTO [User] ([username], [password], [email], [gender], [dob], [phoneNumber], [address], [RoleID], [wallet], [status], [fullname]) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT [roleID] FROM [Role] WHERE [roleName] = ?), 0, 1, ?)");
                 ps.setString(1, username);
                 ps.setString(2, password);
@@ -435,24 +379,23 @@ public class UserDAO {
                 int k = ps.executeUpdate();
                 dbo.commit();
                 User u = UserDAO.getUser(email, password);
-                if (role.equalsIgnoreCase("mentor")) {
-                    ps = dbo.prepareStatement("INSERT INTO [Mentor] ([UserID]) VALUES (?)");
-                    ps.setInt(1, u.getId());
-                    ps.executeUpdate();
-                    dbo.commit();
-                } else {
-                    ps = dbo.prepareStatement("INSERT INTO [Mentee] ([UserID]) VALUES (?)");
-                    ps.setInt(1, u.getId());
-                    ps.executeUpdate();
-                    dbo.commit();
-                }
-                if (k > 0) {
+                    if(role.equalsIgnoreCase("mentor")) {
+                        ps = dbo.prepareStatement("INSERT INTO [Mentor] ([UserID]) VALUES (?)");
+                        ps.setInt(1, u.getId());
+                        ps.executeUpdate();
+                        dbo.commit();
+                    } else {
+                        ps = dbo.prepareStatement("INSERT INTO [Mentee] ([UserID]) VALUES (?)");
+                        ps.setInt(1, u.getId());
+                        ps.executeUpdate();
+                        dbo.commit();
+                    }
+                if(k > 0)
                     return u;
-                }
             }
             rs.close();
             ps.close();
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
             dbo.close();
@@ -479,61 +422,55 @@ public class UserDAO {
         }
         return users;
     }
-
-    public static void main(String[] args) {
-        int userId = 10;
-        String newDob = "2003-01-02"; // Use double quotes for the date string
-
-        try {
-            updateDob(userId, newDob);
-            System.out.println("Date of birth updated successfully for user ID: " + userId);
-        } catch (Exception e) {
-            System.err.println("Error updating date of birth: " + e.getMessage());
-        }
-    }
-
-
-public int getUserID(String email) {
-        int id = 0;
-        Connection dbo = DatabaseUtil.getConn();
+    
+    public User getUserById(int id) {
+        User user = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            String sql = "select UserID from [User] where email like ?";
-            PreparedStatement ps = dbo.prepareStatement(sql);
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
+            connection = DatabaseUtil.getConn();
+            preparedStatement = connection.prepareStatement("SELECT * FROM [User] WHERE UserID = ?");
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                return rs.getInt(1);
+            if (resultSet.next()) {
+                user = new User();
+                user.id = resultSet.getInt("UserID");
+                user.username = resultSet.getString("username");
+                user.password = resultSet.getString("password");
+                user.email = resultSet.getString("email");
+                user.phone = resultSet.getString("phoneNumber");
+                user.address = resultSet.getString("address");
+                user.role = resultSet.getString("roleID");
+                user.avatar = resultSet.getString("Avatar");
+                user.fullname = resultSet.getString("fullname");
+                user.Dob = resultSet.getDate("dob");
+                user.wallet = resultSet.getInt("wallet");
+                user.status = resultSet.getBoolean("status");
+                user.gender = resultSet.getBoolean("gender");
+                user.isValidate = resultSet.getBoolean("isValidate");
             }
-
         } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        return 0;
-    }
-
-public List<RequestDTO> getRequestOfMentee(int id) {
-        List<RequestDTO> requests = new ArrayList<>();
-        Connection dbo = DatabaseUtil.getConn();
-
-        try {
-            String sql = "  select r.RequestReason,r.RequestTime,r.RequestSubject,s.SkillName,r.RequestStatus from Request r,Skills s where UserID = ? and s.SkillID = r.SkillID;";
-            PreparedStatement ps = dbo.prepareStatement(sql);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                RequestDTO request = new RequestDTO(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5));
-                requests.add(request);
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            System.out.println(e);
         }
-        return requests;
+
+        return user;
     }
+
+
+   
+
+
 
    
 public int getRequestMentor(int id) {
@@ -556,6 +493,36 @@ public int getRequestMentor(int id) {
         }
         return 0;
     }
+
+   public static void main(String[] args) {
+        try {
+            // Test data for a single user
+            String username = "ab1cxy111z1111111";
+            String password = "1231";
+            String email = "dung1111111111@gmail.com";
+            String phone = "055272120";
+            String address = "123 Street";
+            String role = "mentor";
+            String gender = "f";
+            String fullname = "John111";
+            String dob = "1990-01-01";
+
+            // Register the user
+            User newUser = UserDAO.register(username, password, email, phone, address, role, gender, fullname, dob);
+
+            // Check the result
+            if (newUser != null) {
+                System.out.println("Registration successful for user: " + newUser.getFullname() + " (Role: " + role + ")");
+            } else {
+                System.out.println("Registration failed for user: " + fullname);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+   
+
     }
 
 
