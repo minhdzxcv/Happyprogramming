@@ -5,12 +5,10 @@
 
 package Controller;
 
-import DAO.MentorDAO;
 import DAO.SkillDAO;
 import DAO.UserDAO;
 import Service.AuthorizationService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,35 +32,23 @@ public class ViewSkillController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+      protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-          try {
+        try {
             if (!AuthorizationService.gI().Authorization(request, response)) {
                 return;
             }
-    
-                ArrayList<Skill> a = SkillDAO.getAll();
-                for (int i = 0; i < a.size(); i++) {
-                    for (int j = i; j < a.size(); j++) {
-                        if (a.get(i).getName().compareToIgnoreCase(a.get(j).getName()) > 0) {
-                            Skill temp = a.get(i);
-                            a.set(i, a.get(j));
-                            a.set(j, temp);
-                        }
-                    }
-                }
-                if(request.getParameter("search") != null) {
-                    String s = request.getParameter("search");
-                    for (int i = 0; i < a.size(); i++) {
-                        if(!a.get(i).getName().toLowerCase().contains(s.toLowerCase())) {
-                            a.remove(i);
-                            i--;
-                        }
-                    }
-                }
-                request.setAttribute("skills", a); //All skill
-           
-         
+
+            ArrayList<Skill> a = SkillDAO.getAll();
+            a.sort((s1, s2) -> s1.getName().compareToIgnoreCase(s2.getName()));
+
+            if (request.getParameter("search") != null) {
+                String s = request.getParameter("search");
+                a.removeIf(skill -> !skill.getName().toLowerCase().contains(s.toLowerCase()));
+            }
+
+            request.setAttribute("skills", a); // All skills
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,6 +64,7 @@ public class ViewSkillController extends HttpServlet {
         }
         request.getRequestDispatcher("ViewSkill.jsp").forward(request, response);
     }
+
 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

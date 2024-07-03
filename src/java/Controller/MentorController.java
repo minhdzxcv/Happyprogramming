@@ -12,18 +12,15 @@ import DAO.RateDAO;
 import DAO.RequestDAO;
 import DAO.ScheduleDAO;
 import DAO.UserDAO;
+import com.google.gson.Gson;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import model.CV;
@@ -33,7 +30,7 @@ import model.User;
 
 /**
  *
- * @author TGDD
+ * @author ADMIN
  */
 @WebServlet(name = "MentorController", urlPatterns = {"/mentor"})
 public class MentorController extends HttpServlet {
@@ -56,8 +53,9 @@ public class MentorController extends HttpServlet {
         } catch (Exception e) {
         }
         String sid = request.getParameter("id");
+        String skillid = request.getParameter("sid");
         if (sid == null) {
-            response.sendRedirect("index");
+            response.sendRedirect("home");
             return;
         }
         try {
@@ -80,9 +78,10 @@ public class MentorController extends HttpServlet {
                 c++;
             }
             request.setAttribute("Rate", rate);
-            request.setAttribute("CurrMentor", m);            
-            request.setAttribute("um", um);            
-                 
+            request.setAttribute("CurrMentor", m);
+            request.setAttribute("um", um);
+            request.setAttribute("skillid", skillid);
+
             CV cv = CvDAO.getCV(m.getCvID());
             request.setAttribute("CurrCV", cv);
             java.util.Date today = new java.util.Date();
@@ -97,12 +96,11 @@ public class MentorController extends HttpServlet {
             request.setAttribute("Rates", RateDAO.getRates(id));
             ArrayList<Slot> arr = ScheduleDAO.getFreeSlots(new java.util.Date(), id);
             request.setAttribute("FreeSlot", arr);
-            
-           
-            
-            
+            Gson gson = new Gson();
+            request.setAttribute("jsonSlots", gson.toJson(arr));
+
         } catch (Exception e) {
-            response.sendRedirect("index");
+            response.sendRedirect("home");
             return;
         }
         request.getRequestDispatcher("mentor.jsp").forward(request, response);
@@ -142,7 +140,7 @@ public class MentorController extends HttpServlet {
         }
         String sid = request.getParameter("id");
         if (sid == null) {
-            response.sendRedirect("index");
+            response.sendRedirect("home");
             return;
         }
         User u = (User) request.getSession().getAttribute("email");
@@ -178,32 +176,41 @@ public class MentorController extends HttpServlet {
             CV cv = CvDAO.getCV(m.getCvID());
             request.setAttribute("CurrCV", cv);
             if (request.getParameter("type") != null) {
-                if(request.getParameter("type").equalsIgnoreCase("follow")) {
+                if (request.getParameter("type").equalsIgnoreCase("follow")) {
                     String title = request.getParameter("title");
                     String FollowReason = request.getParameter("reason");
                     FollowDAO.sendRequest(id, title, FollowReason, u.getId());
                     request.getSession().setAttribute("alert", "Yêu cầu follow thành công!");
-                } else if(request.getParameter("type").equalsIgnoreCase("unfollow")) {
+                } else if (request.getParameter("type").equalsIgnoreCase("unfollow")) {
                     FollowDAO.unFollow(id, u.getId());
-                } else if(request.getParameter("type").equalsIgnoreCase("cancel follow")) {
+                } else if (request.getParameter("type").equalsIgnoreCase("cancel follow")) {
                     FollowDAO.cancelFollowRequest(id, u.getId());
                 }
-                response.sendRedirect("mentor?id="+id);
+                response.sendRedirect("mentor?id=" + id);
                 return;
             } else {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
-                Timestamp tm = Timestamp.from(formatter.parse(deadline).toInstant());
-                boolean check = RequestDAO.createRequest(skills, tm, subject, reason, u.getId(), id, slots);
-                if (check) {
-                    request.getSession().setAttribute("alert", "Gửi request thành công!");
+                double amoutPay = RequestDAO.getMustPayAmount(u.getId());
+                double totalForRequest = cv.getMoneyofslot() * slots.length;
+                double amoutTotalMustPay = amoutPay + totalForRequest;
+                if (u.getWallet() >= amoutTotalMustPay) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
+                    Timestamp tm = Timestamp.from(formatter.parse(deadline).toInstant());
+                    boolean check = RequestDAO.createRequest(skills, tm, subject, reason, u.getId(), id, slots);
+                    if (check) {
+                        request.getSession().setAttribute("alert", "Gửi request thành công!");
+                    } else {
+                        request.getSession().setAttribute("alert", "Gửi request thất bại!");
+                    }
+                } else {
+                    request.getSession().setAttribute("alert", "Số tiền của bạn không đủ để thực hiện. Vui lòng nạp thêm tiền vào tài khoản!");
                 }
-                response.sendRedirect("mentor?id="+id);
+                response.sendRedirect("mentor?id=" + id);
                 return;
             }
         } catch (Exception e) {
             request.getSession().setAttribute("alert", "Gửi request thất bại!");
         }
-        response.sendRedirect("mentor?id="+sid);
+        response.sendRedirect("mentor?id=" + sid);
     }
 
     /**

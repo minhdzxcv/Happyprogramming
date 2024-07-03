@@ -132,7 +132,7 @@ public class FollowDAO {
     public static void acceptFollowRequest(int uid, int rid) {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [Follow] ([MentorID], [MenteeID]) VALUES (?, (SELECT [SenderID] FROM [FollowRequest] WHERE [RequestID] = ?))");
+            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [Follow] ([MentorID], [MenteeID]) VALUES (?, (SELECT [SendID] FROM [FollowRequest] WHERE [RequestID] = ?))");
             ps.setInt(1, uid);
             ps.setInt(2, rid);
             ps.executeUpdate();
@@ -150,7 +150,7 @@ public class FollowDAO {
     public static void cancelFollowRequest(int uid, int sid) {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("DELETE FROM [FollowRequest] WHERE [MentorID] = ? AND [SenderID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("DELETE FROM [FollowRequest] WHERE [MentorID] = ? AND [SendID] = ?");
             ps.setInt(1, uid);
             ps.setInt(2, sid);
             ps.executeUpdate();
@@ -179,11 +179,11 @@ public class FollowDAO {
         ArrayList<FollowRequest> arr = new ArrayList();
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT [RequestID],[RequestTime],[DeadLineTime],[Subject],[Content],[Status],[MentorID],[SendID], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[SendID]) as [Send], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[MentorID]) as [Mentor] FROM [FollowRequest] WHERE [MentorID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("SELECT [RequestID],[RequestTime],[DeadLineTime],[Subject],[Content],[Status],[MentorID],[SendID], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[SendID]) as [Sender], (SELECT [fullname] FROM [User] WHERE [UserID] = [FollowRequest].[MentorID]) as [Mentor] FROM [FollowRequest] WHERE [MentorID] = ?");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
-                arr.add(new FollowRequest(rs.getInt("RequestID"), rs.getString("Subject"), rs.getString("Content"), rs.getInt("SendID"), rs.getInt("MentorID"), rs.getString("Send"), rs.getString("Mentor"), rs.getTimestamp("DeadLineTime"), rs.getTimestamp("RequestTime"), rs.getString("Status")));
+                arr.add(new FollowRequest(rs.getInt("RequestID"), rs.getString("Subject"), rs.getString("Content"), rs.getInt("SendID"), rs.getInt("MentorID"), rs.getString("Sender"), rs.getString("Mentor"), rs.getTimestamp("DeadLineTime"), rs.getTimestamp("RequestTime"), rs.getString("Status")));
             }
             dbo.close();
         } catch(Exception e) {
@@ -195,7 +195,7 @@ public class FollowDAO {
     public static boolean onPending(User u, int id) {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [FollowRequest] WHERE [MentorID] = ? AND [SenderID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [FollowRequest] WHERE [MentorID] = ? AND [SendID] = ?");
             ps.setInt(1, id);
             ps.setInt(2, u.getId());
             ResultSet rs = ps.executeQuery();
@@ -231,7 +231,7 @@ public class FollowDAO {
     public static void sendRequest(int uid, String title, String reason, int sid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [FollowRequest] ([Subject], [Content], [Status], [MentorID], [SenderID]) VALUES (?, ?, N'Pending', ?, ?)");
+            PreparedStatement ps = dbo.prepareStatement("INSERT INTO [FollowRequest] ([Subject], [Content], [Status], [MentorID], [SendID]) VALUES (?, ?, N'Pending', ?, ?)");
             ps.setString(1, title);
             ps.setString(2, reason);
             ps.setInt(3, uid);
@@ -242,6 +242,18 @@ public class FollowDAO {
             e.printStackTrace();
         } finally {
             dbo.close();
+        }
+    }
+    
+    
+    public static void main(String[] args) {
+        // Replace this with a valid mentor ID to test
+        int mentorId = 5;
+
+        ArrayList<FollowRequest> requests = getRequests(mentorId);
+
+        for (FollowRequest request : requests) {
+            System.out.println(request);
         }
     }
 }

@@ -26,7 +26,7 @@ public class AuthorizeDAO {
             PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [AuthorizeMap]");
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
-                AuthorizationService.gI().getMap().put(rs.getString("path"), rs.getString("email"));
+                AuthorizationService.gI().getMap().put(rs.getString("path"), rs.getString("user"));
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class AuthorizeDAO {
     public static void setAuthorize(String path, String roles) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("UPDATE [AuthorizeMap] SET [email] = ? WHERE [path] = ?");
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [AuthorizeMap] SET [user] = ? WHERE [path] = ?");
             ps.setString(1, roles);
             ps.setString(2, path);
             ps.executeUpdate();

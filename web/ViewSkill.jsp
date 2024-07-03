@@ -14,13 +14,28 @@
 
 
     <head>
-        <style>
-            .img-fixed-size {
-                width: 100%; /* Thiết lập kích thước chiều rộng của ảnh */
-                height: auto; /* Đảm bảo tỷ lệ khung hình được giữ nguyên */
+      <style>
+        .img-fixed-size {
+            width: 100%;
+            height: auto;
+        }
 
+        .input-group .form-control {
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+        }
 
-            </style>
+        .input-group .btn {
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .input-group .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 
 
      
@@ -108,7 +123,12 @@
             <div class="container">
                 <!-- ======= About Section ======= -->
              
-                <div class="container">
+               <form method="GET" action="viewskill">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" name="search" placeholder="Search skill by name" aria-label="Search skill by name" aria-describedby="button-search">
+                    <button class="btn btn-primary" type="submit" id="button-search">Search</button>
+                </div>
+            </form>
 
                     <div class="list-player">
                         <div class="box vip-player">

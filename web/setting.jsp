@@ -332,7 +332,7 @@ html:not(.dark-style) .account-settings-links .list-group-item.active {
             });
 
             statisticsLink.addEventListener('click', function () {
-                window.location.href = 'statistic';
+                window.location.href = 'statistics';
             });
 
             historyLink.addEventListener('click', function () {

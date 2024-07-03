@@ -9,7 +9,6 @@ import DAO.MentorDAO;
 import DAO.SkillDAO;
 import Service.AuthorizationService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,7 +63,12 @@ public class SkillServlet extends HttpServlet {
             request.setAttribute("z-a", za);
         } catch (Exception e) {
         }
-        
+        if(request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                request.setAttribute("mentors", MentorDAO.getAllBySkillId(id));
+            } catch(Exception e) {}
+        }
         request.getRequestDispatcher("skill.jsp").forward(request, response);
     }
 

@@ -3,23 +3,16 @@ package Controller;
 import DAO.FollowDAO;
 import DAO.UserDAO;
 import Service.AuthorizationService;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 import model.Mentee;
 import model.Mentor;
 import model.User;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  *
  * @author MINH

@@ -3,7 +3,6 @@ package Controller;
 import Service.AuthorizationService;
 import DAO.UserDAO;
 import Service.MailService;
-import Service.RandomStringService;
 import model.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -16,7 +15,6 @@ import java.sql.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import model.Mentor;
 
 @WebServlet("/SignUpController")
 public class SignUpController extends HttpServlet {
@@ -61,6 +59,17 @@ public class SignUpController extends HttpServlet {
         String gender = request.getParameter("gender");
         String repass = request.getParameter("repass");
         String role = request.getParameter("role");
+        request.setAttribute("username", username);
+        request.setAttribute("password", password);
+        request.setAttribute("email", email);
+        request.setAttribute("phone", phone);
+        request.setAttribute("dob", dob);
+        request.setAttribute("address", address);
+        request.setAttribute("fullname", fullname);
+        request.setAttribute("gender", gender);
+        request.setAttribute("repass", repass);
+        request.setAttribute("role", role);
+
 
         // Validate passwords match
         if (!repass.equals(password)) {
@@ -90,7 +99,6 @@ public class SignUpController extends HttpServlet {
                 request.getRequestDispatcher("SignUp.jsp").forward(request, response);
                 return;
             }
-            
 
             // Send recovery email
             UserDAO.isRegistered(email, username);

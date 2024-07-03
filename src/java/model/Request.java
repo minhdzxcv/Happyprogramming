@@ -147,4 +147,9 @@ public class Request {
         this.DeadlineTime = DeadlineTime;
     }
 
+    @Override
+    public String toString() {
+        return "Request{" + "id=" + id + ", sendID=" + sendID + ", userID=" + userID + ", mentor=" + mentor + ", send=" + send + ", reason=" + reason + ", status=" + status + ", subject=" + subject + ", rejectReason=" + rejectReason + ", DeadlineTime=" + DeadlineTime + ", requestTime=" + requestTime + ", rated=" + rated + ", skills=" + skills + '}';
+    }
+
 }

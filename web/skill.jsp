@@ -40,12 +40,13 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/8.97b85fe3.chunk.css" rel="stylesheet">
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
         body {
-            background: #FFF5EE;
+            background: white;
         }
 
         .card {
@@ -118,16 +119,16 @@
         int end = Math.min(start + itemsPerPage, arr.size());
         int totalPages = (int) Math.ceil((double) arr.size() / itemsPerPage);
     %>
-    <div class="header">
+    <div class="row">
         <%@ include file="header.jsp" %>
-    </div>
+   
 
     <div class="container">
         <div class="row">
             <div class="col-12 mb-3 mb-lg-5">
                 <div class="position-relative card table-nowrap table-card">
                     <div class="card-header align-items-center">
-                        <h5 class="mb-0">List Of Skills</h5>
+                        <h5 class="mb-2" style="font-size: 30px">List Of Skills</h5>
                         <div style="color: black" class="col-sm-2">
                             <select name="sort">
                                 <option disabled selected>Lọc theo tên</option>
@@ -230,9 +231,7 @@
     }
 </script>
 
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
@@ -241,5 +240,99 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-</body>
+
+</div>
+   
+    
+       <% if(request.getAttribute("mentors") != null) {
+            HashMap<Mentor, MentorDetail> mentors = (HashMap)request.getAttribute("mentors");
+        %>
+        <div role="dialog">
+            <div class="fade modal-backdrop"></div>
+            <div role="dialog" tabindex="-1" class="fade modal" style="display: block;">
+                <div class="modal-dialog">
+                    <div class="modal-content" role="document">
+                        <div class="modal-header"><button type="button" class="close"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button><h4 class="modal-title"><span>Mentor Suggest</span></h4></div>
+                        <div class="modal-body">
+                            <div class="content-main">
+                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Avatar</th>
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Fullname</th>                             
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Rating</th>
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Requests</th>
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Accepted</th>
+                                            <th style='font-family: "Open Sans", sans-serif; font-weight: bold; color: black'>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <%for(Mentor m : mentors.keySet()) {%>
+                                        <tr>
+                                            <td><img src="<%=m.getAvatar()%>" style="height: 50px; width: 50px"></td>
+                                            <td><a href="mentor?id=<%=m.getId()%>"><%=m.getFullname()%></a></td>
+                                          
+                                            <td><%=mentors.get(m).getRating()%></td>
+                                            <td><%=mentors.get(m).getRequests()%></td>
+                                            <td><%=mentors.get(m).getAcceptedRequest()%></td>
+                                            <td>
+                                                <a href="mentor?id=<%=m.getId()%>&invite=true&sid=<%=request.getParameter("id")%>" class="delete" data-toggle="modal">
+                                            <i class="fas fa-user-plus" data-toggle="tooltip" title="Thuê"></i>
+                                        </a>
+                                            </td>
+                                        </tr> 
+                                        <%}%>
+                                    </tbody>
+                                </table>
+                                    <%if(mentors.size() == 0) {%>
+                                    <div class="text-center mt-20"><span>Không có dữ liệu</span></div>
+                                    <% } %>
+                            </div>
+                        </div>
+                            <div class="modal-footer"><button type="button" class="btn btn-default"><span>Đóng</span></button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+                                    document.body.style = 'overflow: hidden;  background-color: rgb(233, 235, 238) !important; ';
+                                    setTimeout(function () {
+                                        document.body.children[document.body.children.length - 2].children[1].classList.add("in");
+                                        document.body.children[document.body.children.length - 2].children[0].classList.add("in");
+                                        window.onclick = function (e) {
+                                            if (!document.getElementsByClassName('modal-content')[0].contains(e.target)) {
+                                                    document.body.children[document.body.children.length - 2].children[1].classList.remove("in");
+                                                    document.body.children[document.body.children.length - 2].children[0].classList.remove("in");
+                                                    document.body.style = 'display:flex';
+                                                    setTimeout(function () {
+                                                        document.body.removeChild(document.body.children[document.body.children.length - 2]);
+                                                    }, 200);
+                                            }
+                                        }
+                                        document.getElementsByClassName('btn btn-default')[<%=(u==null) ? 3 : 2%>].onclick = function (e) {
+                                                    document.body.children[document.body.children.length - 2].children[1].classList.remove("in");
+                                                    document.body.children[document.body.children.length - 2].children[0].classList.remove("in");
+                                                    document.body.style = 'display:flex';
+                                                    setTimeout(function () {
+                                                        document.body.removeChild(document.body.children[document.body.children.length - 2]);
+                                                    }, 200);
+                                        }
+                                        document.getElementsByClassName('close')[0].onclick = function (e) {
+                                                    document.body.children[document.body.children.length - 2].children[1].classList.remove("in");
+                                                    document.body.children[document.body.children.length - 2].children[0].classList.remove("in");
+                                                    document.body.style = 'display:flex';
+                                                    setTimeout(function () {
+                                                        document.body.removeChild(document.body.children[document.body.children.length - 2]);
+                                                    }, 200);
+                                        }
+                                    }, 1);
+        </script>
+        <% } %>
+
+        
+        
+         <!-- JavaScript Libraries -->
+  
+    </body>
+
 </html>

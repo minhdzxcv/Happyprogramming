@@ -21,8 +21,7 @@ import model.Skill;
  * @author ADMIN
  */
 public class RequestDAO {
-    
-    
+
     public static int getSlots(int id) {
         int cash = 0;
         Connection dbo = DatabaseUtil.getConn();
@@ -33,7 +32,7 @@ public class RequestDAO {
             rs.next();
             cash = rs.getInt("Count");
             dbo.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return cash;
@@ -42,7 +41,7 @@ public class RequestDAO {
     public static boolean deleteAll(int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps =  dbo.prepareStatement("UPDATE [Request] SET [RequestStatus] = N'Close' WHERE [SendID] = ? AND ([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject')");
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [Request] SET [RequestStatus] = N'Close' WHERE [SendID] = ? AND ([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject')");
             ps.setInt(1, uid);
             int k = ps.executeUpdate();
             dbo.commit();
@@ -93,6 +92,21 @@ public class RequestDAO {
         }
     }
 
+    public static void rejectRequestF(int rid, int uid, String reason) throws Exception {
+        Connection dbo = DatabaseUtil.getConn();
+        try {
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [Request] SET [RequestStatus] = 'Reject', rejectReason=? WHERE [RequestID] = ?");
+            ps.setString(1, reason);
+            ps.setInt(2, rid);
+            ps.executeUpdate();
+            dbo.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dbo.close();
+        }
+    }
+
     public static boolean deleteRequest(int rid, int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
@@ -112,7 +126,7 @@ public class RequestDAO {
         }
         return false;
     }
-    
+
     public static void payment(int rid, int oid, int uid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
@@ -121,7 +135,7 @@ public class RequestDAO {
             ps.setInt(2, oid);
             ps.setInt(3, uid);
             ps.executeUpdate();
-            ps = dbo.prepareStatement("INSERT INTO [Transaction] ([UserID], [Balance], [Type], [Content], [Status]) VALUES (?, ((SELECT Count([SlotID]) FROM [RequestSlot] WHERE [RequestID] = ?) * (SELECT [MoneyOfSlot] FROM [CV] WHERE [CvID] = (SELECT [CvID] FROM [Mentor] WHERE [UserID] = ?))), N'-', N'Nộp tiền request id "+rid+"', N'Success')");
+            ps = dbo.prepareStatement("INSERT INTO [Transaction] ([UserID], [price], [Type], [Content], [Status]) VALUES (?, ((SELECT Count([SlotID]) FROM [RequestSlots] WHERE [RequestID] = ?) * (SELECT [MoneyOfSlot] FROM [CV] WHERE [CvID] = (SELECT [CvID] FROM [Mentor] WHERE [UserID] = ?))), N'-', N'Nộp tiền request id " + rid + "', N'Success')");
             ps.setInt(1, uid);
             ps.setInt(2, rid);
             ps.setInt(3, oid);
@@ -129,7 +143,7 @@ public class RequestDAO {
             ps = dbo.prepareStatement("UPDATE [Request] SET [RequestStatus] = N'Processing' WHERE [RequestID] = ?");
             ps.setInt(1, rid);
             ps.executeUpdate();
-            ps = dbo.prepareStatement("UPDATE [Slot] SET [Status] = N'Not Confirm' WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlots] WHERE [RequestID] = ?)");
+            ps = dbo.prepareStatement("UPDATE [Slots] SET [Status] = N'Not Confirm' WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlots] WHERE [RequestID] = ?)");
             ps.setInt(1, rid);
             ps.executeUpdate();
             ps = dbo.prepareStatement("INSERT INTO [Payment] ([Status], [price], [UserID], [ReceiverID], [RequestID]) VALUES (N'Sent', ((SELECT Count([SlotID]) FROM [RequestSlots] WHERE [RequestID] = ?) * (SELECT [MoneyOfSlot] FROM [CV] WHERE [CvID] = (SELECT [CvID] FROM [Mentor] WHERE [UserID] = ?))), ?, ?, ?)");
@@ -146,7 +160,7 @@ public class RequestDAO {
             dbo.close();
         }
     }
-    
+
     public static int completeRequest(int rid, int oid) throws Exception {
         int cash = 0;
         Connection dbo = DatabaseUtil.getConn();
@@ -161,13 +175,13 @@ public class RequestDAO {
             PreparedStatement ps = dbo.prepareStatement("UPDATE [Request] SET [RequestStatus] = N'Done' WHERE [RequestID] = ?");
             ps.setInt(1, rid);
             ps.executeUpdate();
-            ps = dbo.prepareStatement("SELECT [Balance] FROM [Payment] WHERE [RequestID] = ?");
+            ps = dbo.prepareStatement("SELECT [price] FROM [Payment] WHERE [RequestID] = ?");
             ps.setInt(1, rid);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            cash = rs.getInt("Balance");
+            cash = rs.getInt("price");
             dbo.commit();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         dbo.close();
@@ -184,7 +198,7 @@ public class RequestDAO {
             ps.setInt(1, rid);
             ps.setInt(2, oid);
             ps.executeUpdate();
-            ps = dbo.prepareStatement("UPDATE [Slot] SET [Status] = N'Not Paid', [SkillID] = (SELECT [SkillID] FROM [Request] WHERE [RequestID] = ? AND [UserID] = ?), MenteeID = (SELECT [SendID] FROM [Request] WHERE [RequestID] = ? AND [UserID] = ?) WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlot] WHERE [RequestID] = ?)");
+            ps = dbo.prepareStatement("UPDATE [Slots] SET [Status] = N'Not Paid', [SkillID] = (SELECT [SkillID] FROM [Request] WHERE [RequestID] = ? AND [UserID] = ?), MenteeID = (SELECT [SendID] FROM [Request] WHERE [RequestID] = ? AND [UserID] = ?) WHERE [SlotID] in (SELECT [SlotID] FROM [RequestSlots] WHERE [RequestID] = ?)");
             ps.setInt(1, rid);
             ps.setInt(2, oid);
             ps.setInt(3, rid);
@@ -212,11 +226,11 @@ public class RequestDAO {
                 ResultSet rs2 = ps.executeQuery();
                 rs2.next();
                 r.setMentor(rs2.getString("fullname"));
-                if(r.getStatus().equalsIgnoreCase("reject")) {
+                if (r.getStatus().equalsIgnoreCase("reject")) {
                     ps = dbo.prepareStatement("SELECT * FROM [RejectRequest] WHERE [RequestID] = ?");
                     ps.setInt(1, rs.getInt("RequestID"));
                     rs2 = ps.executeQuery();
-                    if(rs2.next()) {
+                    if (rs2.next()) {
                         r.setRejectReason(rs2.getString("Reason"));
                     }
                 }
@@ -224,7 +238,7 @@ public class RequestDAO {
                 ps.setInt(1, rs.getInt("RequestID"));
                 rs2 = ps.executeQuery();
                 while (rs2.next()) {
-                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("Imageskill"), rs2.getString("Skilldescription")));
+                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("image"), rs2.getString("Description")));
                 }
                 dbo.close();
                 return r;
@@ -241,7 +255,7 @@ public class RequestDAO {
         Connection dbo = DatabaseUtil.getConn();
         ArrayList<Request> arr = new ArrayList();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [SendID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [UserID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -251,11 +265,11 @@ public class RequestDAO {
                 ResultSet rs2 = ps.executeQuery();
                 rs2.next();
                 r.setSend(rs2.getString("fullname"));
-                if(r.getStatus().equalsIgnoreCase("reject")) {
+                if (r.getStatus().equalsIgnoreCase("reject")) {
                     ps = dbo.prepareStatement("SELECT * FROM [RejectRequest] WHERE [RequestID] = ?");
                     ps.setInt(1, rs.getInt("RequestID"));
                     rs2 = ps.executeQuery();
-                    if(rs2.next()) {
+                    if (rs2.next()) {
                         r.setRejectReason(rs2.getString("Reason"));
                     }
                 }
@@ -279,28 +293,30 @@ public class RequestDAO {
         Connection dbo = DatabaseUtil.getConn();
         ArrayList<Request> arr = new ArrayList();
         try {
-            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [UserID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
+            PreparedStatement ps = dbo.prepareStatement("SELECT * FROM [Request] WHERE [SendID] = ? AND ((([RequestStatus] = N'Open' OR [RequestStatus] = N'Reopen' OR [RequestStatus] = N'Reject'  OR [RequestStatus] = N'Close') AND [DeadlineTime] > GETDATE()) OR ([RequestStatus] = N'Accept' OR [RequestStatus] = N'Processing' OR [RequestStatus] = N'Done'))");
             ps.setInt(1, uid);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                String rejectReason = rs.getString("rejectReason");
                 Request r = new Request(rs.getInt("RequestID"), rs.getInt("SendID"), rs.getInt("UserID"), rs.getString("RequestReason"), rs.getString("RequestStatus"), rs.getString("RequestSubject"), rs.getTimestamp("RequestTime"), rs.getTimestamp("DeadlineTime"));
                 ps = dbo.prepareStatement("SELECT [fullname] FROM [User] WHERE [UserID] = ?");
                 ps.setInt(1, r.getUserID());
                 ResultSet rs2 = ps.executeQuery();
                 rs2.next();
                 r.setMentor(rs2.getString("fullname"));
-                if(r.getStatus().equalsIgnoreCase("reject")) {
+                r.setRejectReason(rejectReason);
+                if (r.getStatus().equalsIgnoreCase("reject")) {
                     ps = dbo.prepareStatement("SELECT * FROM [RejectRequest] WHERE [RequestID] = ?");
                     ps.setInt(1, rs.getInt("RequestID"));
                     rs2 = ps.executeQuery();
-                    if(rs2.next()) {
+                    if (rs2.next()) {
                         r.setRejectReason(rs2.getString("Reason"));
                     }
-                } else if(r.getStatus().equalsIgnoreCase("done")) {
+                } else if (r.getStatus().equalsIgnoreCase("done")) {
                     ps = dbo.prepareStatement("SELECT * FROM [Rating] WHERE [RequestID] = ?");
                     ps.setInt(1, rs.getInt("RequestID"));
                     rs2 = ps.executeQuery();
-                    if(rs2.next()) {
+                    if (rs2.next()) {
                         r.setRated(true);
                     }
                 }
@@ -338,11 +354,11 @@ public class RequestDAO {
                 rs2 = ps.executeQuery();
                 rs2.next();
                 r.setSend(rs2.getString("username"));
-                if(r.getStatus().equalsIgnoreCase("reject")) {
+                if (r.getStatus().equalsIgnoreCase("reject")) {
                     ps = dbo.prepareStatement("SELECT * FROM [RejectRequest] WHERE [RequestID] = ?");
                     ps.setInt(1, rs.getInt("RequestID"));
                     rs2 = ps.executeQuery();
-                    if(rs2.next()) {
+                    if (rs2.next()) {
                         r.setRejectReason(rs2.getString("Reason"));
                     }
                 }
@@ -350,7 +366,7 @@ public class RequestDAO {
                 ps.setInt(1, rs.getInt("RequestID"));
                 rs2 = ps.executeQuery();
                 while (rs2.next()) {
-                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("Imageskill"), rs2.getString("Skilldescription")));
+                    r.getSkills().add(new Skill(rs2.getInt("SkillID"), rs2.getString("SkillName"), rs2.getInt("enable") == 1, rs2.getString("image"), rs2.getString("Description")));
                 }
                 arr.add(r);
             }
@@ -365,14 +381,15 @@ public class RequestDAO {
     public static boolean updateRequest(String[] skills, Timestamp deadline, String subject, String reason, int sid, String status, int rid) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
-            PreparedStatement ps = dbo.prepareStatement("UPDATE [Request] SET [SendID] = ?, [RequestSubject] = ?, [RequestReason] = ?, [DeadlineTime] = ?, [RequestStatus] = ?, [SkillID] = ? WHERE [RequestID] = ?");
+            PreparedStatement ps = dbo.prepareStatement("UPDATE [Request] SET [SendID] = ?, [RequestSubject] = ?, [RequestReason] = ?, [DeadlineTime] = ?, [RequestStatus] = ?, [SkillID] = ?, rejectReason=? WHERE [RequestID] = ?");
             ps.setInt(1, sid);
             ps.setString(2, subject);
             ps.setString(3, reason);
             ps.setTimestamp(4, deadline);
             ps.setString(5, status);
             ps.setInt(6, Integer.parseInt(skills[0]));
-            ps.setInt(7, rid);
+            ps.setString(7, null);
+            ps.setInt(8, rid);
             int k = ps.executeUpdate();
             dbo.commit();
             if (k > 0) {
@@ -387,6 +404,31 @@ public class RequestDAO {
         return false;
     }
 
+    public static double getMustPayAmount(int sendId) {
+        double mustPay = 0;
+        String sql = "select sum(C.MoneyOfSlot) as mustPay from Request as R\n"
+                + "join RequestSlots as RS on RS.RequestID = R.RequestID\n"
+                + "join Mentor as M \n"
+                + "on M.UserID = R.UserID\n"
+                + "join CV as C on C.CvID = M.CvID\n"
+                + "where R.SendID = ? and R.RequestStatus != 'Close' and R.RequestStatus != 'Done' AND r.RequestStatus != 'Reject' AND r.RequestStatus != 'Processing'\n"
+                + "group by R.SendID";
+        Connection dbo = DatabaseUtil.getConn();
+        try {
+            PreparedStatement preparedStatement = dbo.prepareStatement(sql);
+            preparedStatement.setInt(1, sendId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                mustPay = resultSet.getDouble("mustPay");
+            }
+        } catch (Exception e) {
+            System.out.println("Get total must pay: " + e);
+        }
+        return mustPay;
+    }
+
     public static boolean createRequest(String[] skills, Timestamp deadline, String subject, String reason, int sid, int uid, String[] slots) throws Exception {
         Connection dbo = DatabaseUtil.getConn();
         try {
@@ -399,7 +441,7 @@ public class RequestDAO {
             ps.setInt(6, Integer.parseInt(skills[0]));
             int k = ps.executeUpdate();
             for (int i = 0; i < slots.length; i++) {
-                ps = dbo.prepareStatement("INSERT INTO [RequestSlot] ([RequestID], [SlotID]) VALUES ((SELECT Top (1) [RequestID] FROM [Request] ORDER BY [RequestID] DESC), ?)");
+                ps = dbo.prepareStatement("INSERT INTO [RequestSlots] ([RequestID], [SlotID]) VALUES ((SELECT Top (1) [RequestID] FROM [Request] ORDER BY [RequestID] DESC), ?)");
                 ps.setInt(1, Integer.parseInt(slots[i]));
                 ps.executeUpdate();
             }
@@ -415,7 +457,19 @@ public class RequestDAO {
         }
         return false;
     }
-    
+
+    public static void main(String[] args) {
+        try {
+            int userId = 8; // Replace with the actual user ID you want to check
+            ArrayList<Request> requests = getMenteeRequests(userId);
+            for (Request request : requests) {
+                System.out.println(request);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 //    public static void main(String[] args){
 //        try{
 //            ArrayList<Request> requests= getMentorRequests(3);

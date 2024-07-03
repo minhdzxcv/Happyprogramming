@@ -11,6 +11,7 @@ import java.sql.Timestamp;
  * @author TGDD
  */
 public class Slot {
+
     int id;
     Timestamp SlotTime;
     float hour;
@@ -27,6 +28,30 @@ public class Slot {
         this.mentor = mentor;
         this.mentorId = mentorId;
     }
+
+    public Slot(int id, Timestamp SlotTime, float hour, String link, String mentor, String Status) {
+        this.id = id;
+        this.SlotTime = SlotTime;
+        this.hour = hour;
+        this.link = link;
+        this.mentor = mentor;
+        this.Status = Status;
+    }
+
+    public Slot(int id, Timestamp SlotTime, float hour, String link, String skill, String mentee, String mentor, String Status, int menteeId, int mentorId) {
+        this.id = id;
+        this.SlotTime = SlotTime;
+        this.hour = hour;
+        this.link = link;
+        this.skill = skill;
+        this.mentee = mentee;
+        this.mentor = mentor;
+        this.Status = Status;
+        this.menteeId = menteeId;
+        this.mentorId = mentorId;
+    }
+    
+    
 
     public String getStatus() {
         return Status;
@@ -107,7 +132,12 @@ public class Slot {
     public void setMentorId(int mentorId) {
         this.mentorId = mentorId;
     }
+    
+    
 
-    
-    
+    @Override
+    public String toString() {
+        return "Slot{" + "id=" + id + ", SlotTime=" + SlotTime + ", hour=" + hour + ", link=" + link + ", skill=" + skill + ", mentee=" + mentee + ", mentor=" + mentor + ", Status=" + Status + ", menteeId=" + menteeId + ", mentorId=" + mentorId + '}';
+    }
+
 }

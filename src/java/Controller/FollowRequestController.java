@@ -8,7 +8,6 @@ package Controller;
 import DAO.FollowDAO;
 import Service.AuthorizationService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -47,7 +46,7 @@ public class FollowRequestController extends HttpServlet {
                 try {
                     int id = Integer.parseInt(sid);
                     FollowDAO.acceptFollowRequest(u.getId(), id);
-                    request.setAttribute("alert", "Đã chấp nhận follow!");
+                    request.setAttribute("alert", "Đã chấp nhận follow!!");
                 } catch(Exception e) {}
             } else if(request.getParameter("type").equalsIgnoreCase("reject")) {
                 try {

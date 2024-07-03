@@ -12,11 +12,13 @@ import java.util.ArrayList;
  * @author TGDD
  */
 public class CV {
+
     int id;
     String ProfessionIntro;
     String Description;
     int Moneyofslot;
     ArrayList<Skill> skills = new ArrayList();
+    private String rejectReason;
 
     public CV(int id, String ProfessionIntro, String Description, int Moneyofslot) {
         this.id = id;
@@ -25,16 +27,20 @@ public class CV {
         this.Moneyofslot = Moneyofslot;
     }
 
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+    
     public CV(int id, String ProfessionIntro, String Description) {
         this.id = id;
         this.ProfessionIntro = ProfessionIntro;
         this.Description = Description;
     }
-    
-    
 
-    
-    
     public String MoneyFormat() {
         DecimalFormat decimalFormat = new DecimalFormat("#,##0");
         return decimalFormat.format(Moneyofslot);
@@ -48,17 +54,15 @@ public class CV {
         this.Moneyofslot = Moneyofslot;
     }
 
-    
-
     public ArrayList<Skill> getSkills() {
         return skills;
     }
-    
+
     public String getSkillString() {
         String ret = "";
         for (int i = 0; i < skills.size(); i++) {
             ret += skills.get(i).getName();
-            if(i != skills.size() - 1) {
+            if (i != skills.size() - 1) {
                 ret += ", ";
             }
         }
@@ -89,8 +93,4 @@ public class CV {
         this.Description = Description;
     }
 
-        public String CashFormat() {
-        DecimalFormat decimalFormat = new DecimalFormat("#,##0");
-        return decimalFormat.format(Moneyofslot);
-    }
 }

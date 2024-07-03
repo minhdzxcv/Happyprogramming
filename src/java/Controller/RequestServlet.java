@@ -4,31 +4,22 @@
  */
 package Controller;
 
-import DAO.CvDAO;
+import DAO.MentorDAO;
+import DAO.RateDAO;
 import DAO.RequestDAO;
-import DAO.SkillDAO;
-import DAO.UserDAO;
-import DataConnector.DatabaseUtil;
+import DAO.ScheduleDAO;
 import Service.AuthorizationService;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
-import model.CV;
+import model.MentorStatistic;
 import model.Request;
-import model.Skill;
 import model.User;
 
 /**
@@ -37,7 +28,6 @@ import model.User;
  */
 @WebServlet(name = "RequestServlet", urlPatterns = {"/request"})
 public class RequestServlet extends HttpServlet {
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,50 +40,92 @@ public class RequestServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            HttpSession session = request.getSession(false);
-            if (session == null || session.getAttribute("user") == null) {
-                // User is not signed in, redirect to the sign-in page
-                request.getRequestDispatcher("SignIn.jsp").forward(request, response);
+            if (!AuthorizationService.gI().Authorization(request, response)) {
                 return;
             }
-            String email = (String) request.getSession().getAttribute("email");
-            String password = (String) request.getSession().getAttribute("password");
-            User user = UserDAO.getUser(email, password);
-            int userId = user.getId();
-            if (UserDAO.isMentor(user)) {
-                // Handle requests from mentors
-                handleMentorRequest(request, response, userId);
-            } else if (UserDAO.isMentee(user)) {
-                // Handle requests from mentees
-                handleMenteeRequest(request, response, userId);
+        } catch (Exception e) {
+        }
+        User u = (User) request.getSession().getAttribute("email");
+        String type = request.getParameter("type");
+        if (type != null) {
+            switch (type) {
+                case "cancel": {
+                    if (u.getRole().equalsIgnoreCase("mentee")) {
+                        if (request.getParameterValues("id") != null && request.getParameterValues("id").length < 2) {
+                            String sid = request.getParameter("id");
+                            if (sid != null && sid.equalsIgnoreCase("all")) {
+                                try {
+                                    RequestDAO.deleteAll(u.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else if (sid != null) {
+                                int id = Integer.parseInt(sid);
+                                try {
+                                    RequestDAO.deleteRequest(id, u.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else if (request.getParameterValues("id") != null) {
+                            String[] sid = request.getParameterValues("id");
+                            for (int i = 0; i < sid.length; i++) {
+                                int id = Integer.parseInt(sid[i]);
+                                try {
+                                    RequestDAO.deleteRequest(id, u.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                case "accept": {
+                    if (u.getRole().equalsIgnoreCase("mentor")) {
+                            String sid = request.getParameter("id");
+                                try {
+                                    int id = Integer.parseInt(sid);
+                                    RequestDAO.acceptRequest(id, u.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                    }
+                    break;
+                }
+                case "complete": {
+                    if (u.getRole().equalsIgnoreCase("mentor")) {
+                            String sid = request.getParameter("id");
+                                try {
+                                    int id = Integer.parseInt(sid);
+                                    if(ScheduleDAO.getPercentByRequest(id) == 100) {
+                                        int cash = RequestDAO.completeRequest(id, u.getId());
+                                        //u.setWallet(u.getWallet() + cash);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                    }
+                    break;
+                }
             }
-        } catch (Exception e) {
         }
-    }
-
-    private void handleMentorRequest(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws ServletException, IOException {
-        // Retrieve all available skills from the SkillDAO
         try {
-            request.setAttribute("role", "mentor");
-            ArrayList<Request> requests = RequestDAO.getMentorRequests(userId);
-            request.setAttribute("requests", requests);
-            request.getRequestDispatcher("request.jsp").forward(request, response);
-        } catch (Exception e) {
-        }
-
-    }
-
-    private void handleMenteeRequest(HttpServletRequest request, HttpServletResponse response, int userId)
-            throws ServletException, IOException {
-        try {
-            request.setAttribute("role", "mentee");
-            ArrayList<Request> requests = RequestDAO.getMenteeRequests(userId);
-            request.setAttribute("requests", requests);
-            request.getRequestDispatcher("request.jsp").forward(request, response);
+            if (u.getRole().equalsIgnoreCase("mentee")) {
+                ArrayList<Request> arr = RequestDAO.getMenteeRequests(u.getId());
+                request.setAttribute("requests", arr);
+            } else {
+                MentorStatistic ms = MentorDAO.getMentorStatistic(u.getId());
+                request.setAttribute("mstatistic", ms);
+                ArrayList<Request> arr = RequestDAO.getMentorRequests(u.getId());
+                request.setAttribute("requests", arr);
+                request.getRequestDispatcher("mentorofrequest.jsp").forward(request, response);
+                return;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        request.getRequestDispatcher("request.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -108,20 +140,7 @@ public class RequestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (request.getSession().getAttribute("email") == null) {
-            request.getRequestDispatcher("SignIn.jsp").forward(request, response);
-        } else {
-            User user = (User) request.getSession().getAttribute("email");
-            int userId = ((User) request.getSession().getAttribute("email")).getId();
-            if (UserDAO.isMentor(user)) {
-                // Handle requests from mentors
-                handleMentorRequest(request, response, userId);
-            } else if (UserDAO.isMentee(user)) {
-                // Handle requests from mentees
-                handleMenteeRequest(request, response, userId);
-            }
-        }
-
+        processRequest(request, response);
     }
 
     /**
@@ -135,7 +154,96 @@ public class RequestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        try {
+            if (!AuthorizationService.gI().Authorization(request, response)) {
+                return;
+            }
+        } catch (Exception e) {
+        }
+        String sid = request.getParameter("id");
+        if (sid == null) {
+            response.sendRedirect("request");
+            return;
+        }
+        String type = request.getParameter("type");
+        if (type != null && type.equalsIgnoreCase("update")) {
+            User u = (User) request.getSession().getAttribute("email");
+            if (u == null || !u.getRole().equalsIgnoreCase("mentee")) {
+                response.sendRedirect("home");
+                return;
+            }
+            String[] skills = request.getParameterValues("skill");
+            String deadline = request.getParameter("deadline");
+            String subject = request.getParameter("subject");
+            String reason = request.getParameter("reason");
+            String status = request.getParameter("status");
+            try {
+                int id = Integer.parseInt(sid);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm");
+                Timestamp tm = Timestamp.from(formatter.parse(deadline).toInstant());
+                boolean check = RequestDAO.updateRequest(skills, tm, subject, reason, u.getId(), status, id);
+                if (check) {
+                    request.setAttribute("status", "Success");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("request");
+                return;
+            }
+        } else if(type != null && type.equalsIgnoreCase("reject")) {
+            User u = (User) request.getSession().getAttribute("email");
+            if (u == null || !u.getRole().equalsIgnoreCase("mentor")) {
+                response.sendRedirect("home");
+                return;
+            }
+            try {
+                int id = Integer.parseInt(sid);
+                String reason = request.getParameter("reason");
+                RequestDAO.rejectRequestF(id, u.getId(), reason);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("request");
+                return;
+            }
+        } else if(type != null && type.equalsIgnoreCase("rate")) {
+            User u = (User) request.getSession().getAttribute("email");
+            if (u == null || !u.getRole().equalsIgnoreCase("mentee")) {
+                response.sendRedirect("request");
+                return;
+            }
+            try {
+                int id = Integer.parseInt(sid);
+                String noStar = request.getParameter("noStar");
+                int star = Integer.parseInt(noStar);
+                String comment = request.getParameter("comment");
+                RateDAO.Rating(id, star, comment);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("request");
+                return;
+            }
+        }  else if(type != null && type.equalsIgnoreCase("pay")) {
+            User u = (User) request.getSession().getAttribute("email");
+            if (u == null || !u.getRole().equalsIgnoreCase("mentee")) {
+                response.sendRedirect("request");
+                return;
+            }
+            try {
+                int rid = Integer.parseInt(sid);
+                int uid = Integer.parseInt(request.getParameter("uid"));
+                int oid = Integer.parseInt(request.getParameter("oid"));
+                RequestDAO.payment(rid, oid, uid);
+                int slotCash = MentorDAO.getSlotCash(oid);
+                int slots = RequestDAO.getSlots(rid);
+                u.setWallet(u.getWallet() - (slotCash*slots));
+                    request.getSession().setAttribute("email", u);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("request");
+                return;
+            }
+        }
+        response.sendRedirect("request");
     }
 
     /**

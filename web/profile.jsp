@@ -371,7 +371,7 @@
                 window.location.href = 'setting';
             });
             statisticsLink.addEventListener('click', function () {
-                window.location.href = 'statistic';
+                window.location.href = 'statistics';
             });
             historyLink.addEventListener('click', function () {
                 window.location.href = 'transaction';

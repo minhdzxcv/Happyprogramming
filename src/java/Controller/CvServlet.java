@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package Controller;
 
 import DAO.CvDAO;
@@ -26,11 +25,13 @@ import model.User;
  *
  * @author ADMIN
  */
-@WebServlet(name="CvServlet", urlPatterns={"/cv"})
+@WebServlet(name = "CvServlet", urlPatterns = {"/cv"})
 public class CvServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -42,7 +43,8 @@ public class CvServlet extends HttpServlet {
             if (!AuthorizationService.gI().Authorization(request, response)) {
                 return;
             }
-        } catch(Exception e) {}
+        } catch (Exception e) {
+        }
         try {
             ArrayList<Skill> a = SkillDAO.getAll(true);
             request.setAttribute("skills", a); //All skill
@@ -81,8 +83,9 @@ public class CvServlet extends HttpServlet {
             if (!AuthorizationService.gI().Authorization(request, response)) {
                 return;
             }
-        } catch(Exception e) {}
-        User u = (User) request.getSession().getAttribute("email");      
+        } catch (Exception e) {
+        }
+        User u = (User) request.getSession().getAttribute("email");
         Mentor m = (Mentor) UserDAO.getRole(u.getId(), u.getRole());
         String type = request.getParameter("type");
         if (type == null) {
@@ -101,7 +104,7 @@ public class CvServlet extends HttpServlet {
                 }
             }
         } else {
-            if(type.equalsIgnoreCase("create")) {
+            if (type.equalsIgnoreCase("create")) {
                 String ProfessionIntro = request.getParameter("profession");
                 String Description = request.getParameter("service");
                 String[] skills = request.getParameterValues("skills");
@@ -109,35 +112,45 @@ public class CvServlet extends HttpServlet {
                 int money = Integer.parseInt(sMoney);
                 try {
                     CvDAO.createCV(u.getId(), ProfessionIntro, Description, skills, money);
-                } catch(Exception e) {}
-            } else if(type.equalsIgnoreCase("update")) {
+                } catch (Exception e) {
+                }
+            }
+            if (type.equals("sendToAdmim")) {
+                String cvid = request.getParameter("id");
+                System.out.println(cvid);
+                try {
+                    CvDAO.sendToAdmim(cvid);
+                } catch (Exception e) {
+                    System.out.println("Send to admin: " + e);
+                }
+            } else if (type.equalsIgnoreCase("update")) {
                 String Profession = request.getParameter("profession");
                 String Descrip = request.getParameter("descrip");
                 String MoneyOfSlot = request.getParameter("MoneyOfSlot");
-                if(Profession != null && !Profession.isEmpty() && Descrip != null && !Descrip.isEmpty() && MoneyOfSlot != null && !MoneyOfSlot.isEmpty()) {
-                try {
-                    int Money = Integer.parseInt(MoneyOfSlot);
-                    CvDAO.updateCV(m.getCvID(), Profession, Descrip, Money);
-                    
-                } catch(Exception e) {
-                    e.printStackTrace();
+                if (Profession != null && !Profession.isEmpty() && Descrip != null && !Descrip.isEmpty() && MoneyOfSlot != null && !MoneyOfSlot.isEmpty()) {
+                    try {
+                        int Money = Integer.parseInt(MoneyOfSlot);
+                        CvDAO.updateCV(m.getCvID(), Profession, Descrip, Money);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                }
-            } else if(type.equalsIgnoreCase("delete")) {
+            } else if (type.equalsIgnoreCase("delete")) {
                 String sid = request.getParameter("id");
                 int id = Integer.parseInt(sid);
                 try {
                     CvDAO.removeSkill(u.getId(), id);
-                } catch(Exception e) {
-                    
+                } catch (Exception e) {
+
                 }
-            } else if(type.equalsIgnoreCase("add")) {
+            } else if (type.equalsIgnoreCase("add")) {
                 String sid = request.getParameter("id");
                 int id = Integer.parseInt(sid);
                 try {
                     CvDAO.addSkill(u.getId(), id);
-                } catch(Exception e) {
-                    
+                } catch (Exception e) {
+
                 }
             }
         }

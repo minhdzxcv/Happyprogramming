@@ -109,5 +109,13 @@ public class FollowRequest {
     public void setCreateAt(Timestamp createAt) {
         this.createAt = createAt;
     }
+
+    @Override
+    public String toString() {
+        return "FollowRequest{" + "id=" + id + ", title=" + title + ", content=" + content + ", status=" + status + ", SendID=" + SendID + ", MentorID=" + MentorID + ", Send=" + Send + ", Mentor=" + Mentor + ", deadline=" + deadline + ", createAt=" + createAt + '}';
+    }
+    
+    
+    
     
 }
