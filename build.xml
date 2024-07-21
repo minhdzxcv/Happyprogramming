@@ -8,6 +8,10 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
 <<<<<<< HEAD
+<project name="HappyProgramming_1.0" default="default" basedir=".">
+    <description>Builds, tests, and runs the project HappyProgramming_1.0.</description>
+=======
+<<<<<<< HEAD
 <project name="SWP_TESTING" default="default" basedir=".">
     <description>Builds, tests, and runs the project SWP_TESTING.</description>
 =======
@@ -17,6 +21,7 @@
 =======
 <project name="HappyProgramming" default="default" basedir=".">
     <description>Builds, tests, and runs the project HappyProgramming.</description>
+>>>>>>> origin/minhhe172831
 >>>>>>> origin/minhhe172831
 >>>>>>> origin/minhhe172831
     <import file="nbproject/build-impl.xml"/>

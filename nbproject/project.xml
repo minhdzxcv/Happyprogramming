@@ -4,6 +4,11 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/web-project/3">
 <<<<<<< HEAD
+            <name>HappyProgramming_1.0</name>
+            <minimum-ant-version>1.6.5</minimum-ant-version>
+            <web-module-libraries/>
+=======
+<<<<<<< HEAD
             <name>SWP_TESTING</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
@@ -130,6 +135,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
+>>>>>>> origin/minhhe172831
 >>>>>>> origin/minhhe172831
 >>>>>>> origin/minhhe172831
             <web-module-additional-libraries/>
